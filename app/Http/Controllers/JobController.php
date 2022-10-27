@@ -71,7 +71,8 @@ class JobController extends Controller
      */
     public function update(UpdateJobRequest $request, Job $job)
     {
-        //
+        $ret = $job->fill($request->validated());
+		return $job->update();
     }
 
     /**
@@ -82,6 +83,6 @@ class JobController extends Controller
      */
     public function destroy(Job $job)
     {
-        //
+        return $job->delete();
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class UpdateJobRequest extends FormRequest
 {
@@ -13,7 +14,7 @@ class UpdateJobRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +25,18 @@ class UpdateJobRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'title' => 'nullable|string', 
+			'presentation' => 'nullable|string', 
+			'min_salary' => 'nullable|integer', 
+			'max_salary' => 'nullable|integer',
+			'working_place' =>  ['nullable', new Enum(WorkingPlace::class)],
+			'working_place_country' => ['nullable', new Enum(WorkingPlaceCountry::class)],
+			'employment_contract_type' => ['nullable', new Enum(EmploymentContractType::class)],
+			'contractual_working_time' => 'nullable|string',
+			'contractual_working_time' => 'nullable|string',
+			'collective_agreement' => ['nullable', new Enum(CollectiveAgreement::class)],
+			'flexible_hours' => 'nullable|boolean',
+			'working_hours_modulation_system' => 'nullable|boolean'
         ];
     }
 }

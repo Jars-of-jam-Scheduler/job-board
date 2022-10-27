@@ -10,7 +10,6 @@ use App\Enums\CollectiveAgreement;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
-
 class StoreJobRequest extends FormRequest
 {
     /**
@@ -35,14 +34,14 @@ class StoreJobRequest extends FormRequest
 			'presentation' => 'required|string', 
 			'min_salary' => 'required|integer', 
 			'max_salary' => 'required|integer',
-			'working_place' =>  [new Enum(WorkingPlace::class)],
-			'working_place_country' => new Enum(WorkingPlaceCountry::class),
-			'employment_contract_type' => new Enum(EmploymentContractType::class),
+			'working_place' =>  ['required', new Enum(WorkingPlace::class)],
+			'working_place_country' => ['required', new Enum(WorkingPlaceCountry::class)],
+			'employment_contract_type' => ['required', new Enum(EmploymentContractType::class)],
 			'contractual_working_time' => 'required|string',
 			'contractual_working_time' => 'required|string',
-			'collective_agreement' => new Enum(CollectiveAgreement::class),
-			'flexible_hours' => 'boolean',
-			'working_hours_modulation_system' => 'boolean'
+			'collective_agreement' => ['required', new Enum(CollectiveAgreement::class)],
+			'flexible_hours' => 'required|boolean',
+			'working_hours_modulation_system' => 'required|boolean'
         ];
     }
 }

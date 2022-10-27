@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Log;
 
-class BasicJobStorageTest extends TestCase
+class BasicJobStoreTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -38,17 +38,10 @@ class BasicJobStorageTest extends TestCase
         $response->assertStatus(201);
     }
 
-	public function test_store_job_stored_data() : void
-    {
-        $this->post(route('jobs.store'), $this->job);
-        $this->assertDatabaseHas('jobs', $this->job);
-    }
-
-	public function test_store_job_stored_id() : void
+	public function test_store_job_storage_data() : void
     {
         $response = $this->post(route('jobs.store'), $this->job);
-		Log::info('job_id');
-		Log::info($response->json('id'));
-        $this->assertDatabaseHas('jobs', ['id' => $response->json('id')]);
+        $this->assertDatabaseHas('jobs', ['id' => $response->json('id'), ...$this->job]);
     }
+
 }
