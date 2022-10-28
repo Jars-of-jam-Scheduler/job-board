@@ -9,11 +9,11 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Log;
 
-class BasicJobDeleteTest extends TestCase
+class JobDeleteTest extends TestCase
 {
     use RefreshDatabase;
 
-	private $job_to_delete;
+	private Job $job_to_delete;
 
 	public function setUp() : void
 	{

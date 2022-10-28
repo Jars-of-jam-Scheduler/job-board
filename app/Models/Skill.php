@@ -12,4 +12,12 @@ class Skill extends Model
 	protected $fillable = [
 		'title',
 	];
+
+	public $timestamps = false;
+
+	public function jobs()
+	{
+		return $this->belongsToMany(Job::class);
+	}
+
 }

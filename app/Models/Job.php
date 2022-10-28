@@ -22,4 +22,10 @@ class Job extends Model
 		'flexible_hours', 
 		'working_hours_modulation_system'
 	];
+
+	public function skills()
+	{
+		return $this->belongsToMany(Skill::class);
+	}
+
 }

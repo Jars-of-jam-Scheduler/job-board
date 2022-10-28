@@ -7,11 +7,11 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Log;
 
-class BasicJobStoreTest extends TestCase
+class JobStoreTest extends TestCase
 {
     use RefreshDatabase;
 
-	private $job;
+	private array $job;
 
 	public function setUp() : void
 	{

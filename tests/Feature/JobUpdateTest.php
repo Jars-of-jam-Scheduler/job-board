@@ -9,12 +9,12 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Log;
 
-class BasicJobUpdateTest extends TestCase
+class JobUpdateTest extends TestCase
 {
     use RefreshDatabase;
 
-	private $job_update_new_data;
-	private $job_to_update;
+	private array $job_update_new_data;
+	private Job $job_to_update;
 
 	public function setUp() : void
 	{
