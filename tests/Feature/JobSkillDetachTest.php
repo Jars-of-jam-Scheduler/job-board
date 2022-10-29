@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
-class JobSkillStoreTest extends TestCase
+class JobSkillDetachTest extends TestCase
 {
 
 	private Job $job;
@@ -37,25 +37,34 @@ class JobSkillStoreTest extends TestCase
 		]);
 	}
 
-    public function test_store_job_skill_status()
+    public function test_detach_job_skill_status()
     {
-        $response = $this->post('/api/store_job_skill', [
+        $this->post('/api/attach_job_skill', [
 			'job' => $this->job['id'], 
 			'skill' => $this->skill['id'], 
 		]);
 
-        $response->assertStatus(201);
+		$response = $this->post('/api/detach_job_skill', [
+			'job' => $this->job['id'], 
+			'skill' => $this->skill['id'], 
+		]);
+
+        $response->assertStatus(200);
     }
 
-	public function test_store_job_skill_data()
+	public function test_detach_job_skill_data()
     {
-		$response = $this->post('/api/store_job_skill', [
+		$this->post('/api/attach_job_skill', [
 			'job' => $this->job['id'], 
 			'skill' => $this->skill['id'], 
 		]);
 
-        $this->assertDatabaseHas('job_skill', [
-			'id' => $response->json('id'), 
+		$response = $this->post('/api/detach_job_skill', [
+			'job' => $this->job['id'], 
+			'skill' => $this->skill['id'], 
+		]);
+
+        $this->assertDatabaseMissing('job_skill', [
 			'job_id' => $this->job['id'], 
 			'skill_id' => $this->skill['id'], 
 		]);

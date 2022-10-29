@@ -18,7 +18,8 @@ use App\Http\Controllers\JobController;
 
 Route::apiResource('jobs', JobController::class);
 
-Route::post('/store_job_skill', JobController::class);
+Route::post('/attach_job_skill', [JobController::class, 'attachJobSkill']);
+Route::post('/detach_job_skill', [JobController::class, 'detachJobSkill']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

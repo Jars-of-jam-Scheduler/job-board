@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreJobRequest;
 use App\Http\Requests\UpdateJobRequest;
+use Illuminate\Http\Request;
 use App\Models\Job;
 
 class JobController extends Controller
@@ -85,4 +86,22 @@ class JobController extends Controller
     {
         return $job->delete();
     }
+
+	public function attachJobSkill(Request $request)
+	{
+		$validated = $request->validate([
+			'job' => 'required|integer|gt:0',
+			'skill' => 'required|integer|gt:0'
+		]);
+		Job::findOrFail($request->input('job'))->skills()->attach($request->input('skill'));
+	}
+
+	public function detachJobSkill(Request $request)
+	{
+		$validated = $request->validate([
+			'job' => 'required|integer|gt:0',
+			'skill' => 'required|integer|gt:0'
+		]);
+		Job::findOrFail($request->input('job'))->skills()->detach($request->input('skill'));
+	}
 }
