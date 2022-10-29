@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\JobController;
+use App\Http\Controllers\{JobController, UserController};
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +20,9 @@ Route::apiResource('jobs', JobController::class);
 
 Route::post('/attach_job_skill', [JobController::class, 'attachJobSkill']);
 Route::post('/detach_job_skill', [JobController::class, 'detachJobSkill']);
+
+Route::post('/attach_user_job', [UserController::class, 'attachJob']);
+Route::post('/detach_user_job', [UserController::class, 'detachJob']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
