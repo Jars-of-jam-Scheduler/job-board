@@ -93,7 +93,7 @@ class JobController extends Controller
 			'job' => 'required|integer|gt:0',
 			'skill' => 'required|integer|gt:0'
 		]);
-		Job::findOrFail($request->input('job'))->skills()->attach($request->input('skill'));
+		Job::findOrFail($validated['job'])->skills()->attach($validated['skill']);
 	}
 
 	public function detachJobSkill(Request $request)
@@ -102,6 +102,6 @@ class JobController extends Controller
 			'job' => 'required|integer|gt:0',
 			'skill' => 'required|integer|gt:0'
 		]);
-		Job::findOrFail($request->input('job'))->skills()->detach($request->input('skill'));
+		Job::findOrFail($validated['job'])->skills()->detach($validated['skill']);
 	}
 }
