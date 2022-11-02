@@ -44,7 +44,8 @@ class UserJobAttachTest extends TestCase
     {
         $response = $this->post('/api/attach_user_job', [
 			'user' => $this->user['id'],
-			'job' => $this->job['id']
+			'job' => $this->job['id'],
+			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
 		]);
 
         $response->assertStatus(200);
@@ -52,14 +53,52 @@ class UserJobAttachTest extends TestCase
 
 	public function test_attach_user_job_data()
     {
-		$response = $this->post('/api/attach_user_job', [
+		$this->post('/api/attach_user_job', [
 			'user' => $this->user['id'],
-			'job' => $this->job['id']
+			'job' => $this->job['id'],
+			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
 		]);
 
-        $this->assertDatabaseHas('user_job', [
-			'user' => $this->user['id'],
-			'job' => $this->job['id']
+        $this->assertDatabaseHas('job_user', [
+			'user_id' => $this->user['id'],
+			'job_id' => $this->job['id'],
+			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
 		]);
     }
+
+	public function test_attach_user_job_once_status()
+	{
+		$this->post('/api/attach_user_job', [
+			'user' => $this->user['id'],
+			'job' => $this->job['id'],
+			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
+		]);
+
+		$response = $this->post('/api/attach_user_job', [
+			'user' => $this->user['id'],
+			'job' => $this->job['id'],
+			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
+		]);
+
+		$response->assertStatus(400);
+
+	}
+
+	public function test_attach_user_job_once_data()
+	{
+		$this->post('/api/attach_user_job', [
+			'user' => $this->user['id'],
+			'job' => $this->job['id'],
+			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
+		]);
+
+		$response = $this->post('/api/attach_user_job', [
+			'user' => $this->user['id'],
+			'job' => $this->job['id'],
+			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
+		]);
+
+		$inserted_jobs_counter = User::findOrFail($this->user['id'])->jobs()->where('job_id', $this->job['id'])->count();
+		$this->assertEquals($inserted_jobs_counter, 1);
+	}
 }

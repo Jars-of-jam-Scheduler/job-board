@@ -47,4 +47,9 @@ class User extends Authenticatable
 		return $this->belongsToMany(Job::class);
 	}
 
+	public function hasAppliedFor(int $job_id) : bool
+	{
+		return $this->jobs()->where('job_id', $job_id)->exists();
+	}
+
 }

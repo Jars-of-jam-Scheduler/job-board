@@ -13,9 +13,17 @@ class UserController extends Controller
 	{
 		$validated = $request->validate([
 			'user' => 'required|integer|gt:0',
-			'job' => 'required|integer|gt:0'
+			'job' => 'required|integer|gt:0',
+			'message' => 'nullable|string'
 		]);
-		User::findOrFail($validated['user'])->jobs()->attach($validated['job']);
+
+		$user = User::findOrFail($validated['user']);
+
+		abort_if($user->hasAppliedFor($validated['job']), 400, __('You have already applied for that job.'));
+
+		$user->jobs()->attach($validated['job'], [
+			'message' => $validated['message']
+		]);
 	}
 
 	public function detachJob(Request $request) : void

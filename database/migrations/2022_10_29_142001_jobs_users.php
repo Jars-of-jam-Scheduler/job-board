@@ -20,6 +20,7 @@ return new class extends Migration
 			$table->unsignedBigInteger('user_id');
 			$table->foreign('job_id')->references('id')->on('jobs');
 			$table->foreign('user_id')->references('id')->on('users');
+			$table->text('message')->nullable();
 
 			$table->timestamps();
         });

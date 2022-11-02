@@ -67,9 +67,9 @@ class UserJobDetachTest extends TestCase
 			'job' => $this->job['id']
 		]);
 
-        $this->assertDatabaseMissing('user_job', [
-			'user' => $this->user['id'],
-			'job' => $this->job['id']
+        $this->assertDatabaseMissing('job_user', [
+			'user_id' => $this->user['id'],
+			'job_id' => $this->job['id']
 		]);
     }
 
