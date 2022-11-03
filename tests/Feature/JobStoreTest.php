@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
+
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -18,7 +20,11 @@ class JobStoreTest extends TestCase
 	{
 		parent::setUp();
 
-		$firm = User::create();
+		$firm = User::create([
+			'name' => 'The Firm',
+			'email' => 'test@thegummybears.test', 
+			'password' => 'azerty', 
+		]);;
 
 		$this->job = [
 			'title' => 'My Super Job',
