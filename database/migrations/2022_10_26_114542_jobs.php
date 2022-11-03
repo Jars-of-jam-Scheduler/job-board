@@ -16,6 +16,10 @@ return new class extends Migration
 
         Schema::create('jobs', function (Blueprint $table) {
 			$table->id();
+
+			$table->unsignedBigInteger('firm_id');
+			$table->foreign('firm_id')->references('id')->on('users');
+
 			$table->string('title')->nullable();
 			$table->text('presentation')->nullable();
 			$table->integer('min_salary')->nullable();

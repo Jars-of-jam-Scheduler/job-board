@@ -38,6 +38,7 @@ class JobController extends Controller
      */
     public function store(StoreJobRequest $request)
     {
+		abort_if(!User::where('id', $request->firm_id)->exists(), 400, 'The firm was not found.');
         return Job::create($request->validated());
     }
 
