@@ -26,6 +26,7 @@ class UpdateJobRequest extends FormRequest
     {
         return [
             'title' => 'nullable|string', 
+			'firm_id' => 'prohibited',
 			'presentation' => 'nullable|string', 
 			'min_salary' => 'nullable|integer', 
 			'max_salary' => 'nullable|integer',
