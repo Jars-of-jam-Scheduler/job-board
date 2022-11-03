@@ -24,7 +24,7 @@ class JobStoreTest extends TestCase
 			'name' => 'The Firm',
 			'email' => 'test@thegummybears.test', 
 			'password' => 'azerty', 
-		]);;
+		]);
 
 		$this->job = [
 			'title' => 'My Super Job',
