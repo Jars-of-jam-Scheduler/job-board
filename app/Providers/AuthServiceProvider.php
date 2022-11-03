@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\{User, Job};
+
 // use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -25,6 +28,41 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+		$this->defineFirmGates();
+		$this->defineApplierGates();
     }
+
+	private function defineFirmGates() : void
+	{
+		Gate::define('store-job', function(User $user) {
+			return in_array('firm', $user->roles);
+		});
+
+		Gate::define('update-job', function(User $user, Job $job) {
+			return in_array('firm', $user->roles) && $job->user_id == $user->getKey();
+		});
+
+		Gate::define('destroy-job', function(User $user, Job $job) {
+			return in_array('firm', $user->roles) && $job->user_id == $user->getKey();
+		});
+
+		Gate::define('attach-job-skill', function(User $user, Job $job) {
+			return in_array('firm', $user->roles) && $job->user_id == $user->getKey();
+		});
+
+		Gate::define('detach-job-skill', function(User $user, Job $job) {
+			return in_array('firm', $user->roles) && $job->user_id == $user->getKey();
+		});
+	}
+
+	private function defineApplierGates() : void
+	{
+		Gate::define('attach-job', function(User $user) {
+			return in_array('applier', $user->roles);
+		});
+
+		Gate::define('detach-job', function(User $user) {
+			return in_array('applier', $user->roles) && $job->user_id == $user->getKey();
+		});
+	}
 }

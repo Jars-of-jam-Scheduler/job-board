@@ -1,9 +1,12 @@
 <?php
 
+use App\Models\User;
+use App\Http\Controllers\{JobController, UserController};
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-use App\Http\Controllers\{JobController, UserController};
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,15 +19,38 @@ use App\Http\Controllers\{JobController, UserController};
 |
 */
 
-Route::apiResource('jobs', JobController::class);
+Route::post('/sanctum/token', function(Request $request) {
+	$request->validate([
+		'email' => 'required|email',
+		'password' => 'required',
+		'device_name' => 'required'
+	]);
 
-Route::post('/attach_job_skill', [JobController::class, 'attachJobSkill']);
-Route::post('/detach_job_skill', [JobController::class, 'detachJobSkill']);
+	$user = User::where('email', $request->email)->first();
+	if(!$user || !Hash::check($request->password, $user->password)) {
+		throw ValidationException::withMessage([
+			'email' => 'The provided credentials are incorrect.'
+		]);
+	}
 
-Route::post('/attach_user_job', [UserController::class, 'attachJob']);
-Route::post('/detach_user_job', [UserController::class, 'detachJob']);
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+	return $user->createToken($request->device_name)->plainTextToken;
 });
+
+Route::apiResource('jobs', JobController::class);  // Routes are Sanctumed in the controller
+
+Route::middleware('auth:sanctum')->group(function() {
+
+	Route::post('/attach_job_skill', [JobController::class, 'attachJobSkill']);
+	Route::post('/detach_job_skill', [JobController::class, 'detachJobSkill']);
+	
+	Route::post('/attach_user_job', [UserController::class, 'attachJob']);
+	Route::post('/detach_user_job', [UserController::class, 'detachJob']);
+
+	Route::get('/user', function (Request $request) {
+		return $request->user();
+	});
+	
+});
+
+
 
