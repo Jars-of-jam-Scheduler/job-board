@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Job;
+use App\Models\{Job, User};
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -19,8 +19,15 @@ class JobDeleteTest extends TestCase
 	{
 		parent::setUp();
 
+		$firm = User::create([
+			'name' => 'The Firm',
+			'email' => 'test@thegummybears.test', 
+			'password' => 'azerty', 
+		]);
+
 		$this->job_to_delete = Job::create([
 			'title' => 'My Super Job',
+			'firm_id' => $firm->getKey(),
 			'presentation' => 'Its presentation', 
 			'min_salary' => 45000, 
 			'max_salary' => 45000, 

@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Job;
+use App\Models\{Job, User};
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -15,13 +15,21 @@ class JobUpdateTest extends TestCase
 
 	private array $job_update_new_data;
 	private Job $job_to_update;
+	private array $job_with_firm_update_new_data;
 
 	public function setUp() : void
 	{
 		parent::setUp();
 
+		$firm = User::create([
+			'name' => 'The Firm',
+			'email' => 'test@thegummybears.test', 
+			'password' => 'azerty', 
+		]);
+
 		$this->job_to_update = Job::create([
 			'title' => 'My Super Job',
+			'firm_id' => $firm->getKey(),
 			'presentation' => 'Its presentation', 
 			'min_salary' => 45000, 
 			'max_salary' => 45000, 
@@ -40,6 +48,14 @@ class JobUpdateTest extends TestCase
 			'max_salary' => 100000, 
 			'contractual_working_time' => '35',
 		];
+
+		$this->job_with_firm_update_new_data = [
+			'firm_id' => 2,
+			'title' => 'My Giga Hyper Super Job',
+			'min_salary' => 80000, 
+			'max_salary' => 100000, 
+			'contractual_working_time' => '35',
+		];
 	}
 
     public function test_update_job_status() : void
@@ -52,6 +68,24 @@ class JobUpdateTest extends TestCase
     {
         $response = $this->put(route('jobs.update', ['job' => $this->job_to_update['id']]), $this->job_update_new_data);
         $this->assertDatabaseHas('jobs', [...$this->job_to_update->toArray(), ...$this->job_update_new_data]);
+    }
+
+	public function test_update_job_with_firm_status() : void
+    {
+        $response = $this->put(route('jobs.update', ['job' => $this->job_to_update['id']]), $this->job_with_firm_update_new_data);
+        $response->assertSessionHasErrors(['firm_id']);
+    }
+
+	public function test_update_job_with_firm_update_data_missing() : void
+    {
+        $response = $this->put(route('jobs.update', ['job' => $this->job_to_update['id']]), $this->job_with_firm_update_new_data);
+        $this->assertDatabaseMissing('jobs', [...$this->job_to_update->toArray(), ...$this->job_with_firm_update_new_data]);
+    }
+
+	public function test_update_job_with_firm_update_data_exists() : void
+    {
+        $response = $this->put(route('jobs.update', ['job' => $this->job_to_update['id']]), $this->job_with_firm_update_new_data);
+        $this->assertDatabaseHas('jobs', $this->job_to_update->toArray());
     }
 
 }
