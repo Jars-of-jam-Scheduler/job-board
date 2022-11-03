@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\{Job, Skill};
+use App\Models\{Job, Skill, User};
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -10,6 +10,7 @@ use Tests\TestCase;
 
 class JobSkillAttachTest extends TestCase
 {
+    use RefreshDatabase;
 
 	private Job $job;
 	private Skill $skill;
@@ -18,8 +19,15 @@ class JobSkillAttachTest extends TestCase
 	{
 		parent::setUp();
 
+		$firm = User::create([
+			'name' => 'The Firm',
+			'email' => 'test@thegummybears.test', 
+			'password' => 'azerty', 
+		]);
+
 		$this->job = Job::create([
 			'title' => 'My Super Job',
+			'firm_id' => $firm->getKey(),
 			'presentation' => 'Its presentation', 
 			'min_salary' => 45000, 
 			'max_salary' => 45000, 
