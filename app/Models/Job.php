@@ -11,6 +11,7 @@ class Job extends Model
 
 	protected $fillable = [
 		'title',
+		'firm_id',
 		'presentation', 
 		'min_salary', 
 		'max_salary', 
