@@ -12,21 +12,31 @@ class UserJobAttachTest extends TestCase
 {
 	use RefreshDatabase;
 
-	private User $user;
+	private User $applier;
+	private User $firm;
 	private Job $job;
 
 	public function setUp() : void
 	{
 		parent::setUp();
 
-		$this->user = User::create([
+		$this->applier = User::create([
 			'name' => 'Test User',
 			'email' => 'test@thegummybears.test', 
 			'password' => 'azerty', 
+			'roles' => ['applier']
+		]);
+
+		$this->firm = User::create([
+			'name' => 'Test User',
+			'email' => 'test@thegummybears.test', 
+			'password' => 'azerty', 
+			'roles' => ['firm']
 		]);
 
 		$this->job = Job::create([
 			'title' => 'My Super Job',
+			'firm_id' => $this->firm->getKey(),
 			'presentation' => 'Its presentation', 
 			'min_salary' => 45000, 
 			'max_salary' => 45000, 
@@ -43,7 +53,7 @@ class UserJobAttachTest extends TestCase
     public function test_attach_user_job_status()
     {
         $response = $this->post('/api/attach_user_job', [
-			'user' => $this->user['id'],
+			'user' => $this->applier['id'],
 			'job' => $this->job['id'],
 			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
 		]);
@@ -54,13 +64,13 @@ class UserJobAttachTest extends TestCase
 	public function test_attach_user_job_data()
     {
 		$this->post('/api/attach_user_job', [
-			'user' => $this->user['id'],
+			'user' => $this->applier['id'],
 			'job' => $this->job['id'],
 			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
 		]);
 
         $this->assertDatabaseHas('job_user', [
-			'user_id' => $this->user['id'],
+			'user_id' => $this->applier['id'],
 			'job_id' => $this->job['id'],
 			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
 		]);
@@ -69,13 +79,13 @@ class UserJobAttachTest extends TestCase
 	public function test_attach_user_job_once_status()
 	{
 		$this->post('/api/attach_user_job', [
-			'user' => $this->user['id'],
+			'user' => $this->applier['id'],
 			'job' => $this->job['id'],
 			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
 		]);
 
 		$response = $this->post('/api/attach_user_job', [
-			'user' => $this->user['id'],
+			'user' => $this->applier['id'],
 			'job' => $this->job['id'],
 			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
 		]);
@@ -87,18 +97,18 @@ class UserJobAttachTest extends TestCase
 	public function test_attach_user_job_once_data()
 	{
 		$this->post('/api/attach_user_job', [
-			'user' => $this->user['id'],
+			'user' => $this->applier['id'],
 			'job' => $this->job['id'],
 			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
 		]);
 
 		$response = $this->post('/api/attach_user_job', [
-			'user' => $this->user['id'],
+			'user' => $this->applier['id'],
 			'job' => $this->job['id'],
 			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
 		]);
 
-		$inserted_jobs_counter = User::findOrFail($this->user['id'])->jobs()->where('job_id', $this->job['id'])->count();
+		$inserted_jobs_counter = User::findOrFail($this->applier['id'])->jobs()->where('job_id', $this->job['id'])->count();
 		$this->assertEquals($inserted_jobs_counter, 1);
 	}
 }

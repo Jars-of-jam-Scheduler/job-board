@@ -23,6 +23,7 @@ class JobDeleteTest extends TestCase
 			'name' => 'The Firm',
 			'email' => 'test@thegummybears.test', 
 			'password' => 'azerty', 
+			'roles' => ['firm']
 		]);
 
 		$this->job_to_delete = Job::create([

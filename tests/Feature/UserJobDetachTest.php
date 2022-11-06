@@ -12,21 +12,31 @@ class UserJobDetachTest extends TestCase
 {
 	use RefreshDatabase;
 
-	private User $user;
+	private User $applier;
+	private User $firm;
 	private Job $job;
 
 	public function setUp() : void
 	{
 		parent::setUp();
 
-		$this->user = User::create([
+		$this->applier = User::create([
 			'name' => 'Test User',
 			'email' => 'test@thegummybears.test', 
 			'password' => 'azerty', 
+			'roles' => ['applier']
+		]);
+
+		$this->firm = User::create([
+			'name' => 'Test User',
+			'email' => 'test@thegummybears.test', 
+			'password' => 'azerty', 
+			'roles' => ['firm']
 		]);
 
 		$this->job = Job::create([
 			'title' => 'My Super Job',
+			'firm_id' => $this->firm->getKey(),
 			'presentation' => 'Its presentation', 
 			'min_salary' => 45000, 
 			'max_salary' => 45000, 
@@ -43,12 +53,12 @@ class UserJobDetachTest extends TestCase
     public function test_detach_user_job_status()
     {
         $this->post('/api/attach_user_job', [
-			'user' => $this->user['id'],
+			'user' => $this->applier['id'],
 			'job' => $this->job['id']
 		]);
 
 		$response = $this->post('/api/detach_user_job', [
-			'user' => $this->user['id'],
+			'user' => $this->applier['id'],
 			'job' => $this->job['id']
 		]);
 
@@ -58,17 +68,17 @@ class UserJobDetachTest extends TestCase
 	public function test_detach_user_job_data()
     {
 		$this->post('/api/attach_user_job', [
-			'user' => $this->user['id'],
+			'user' => $this->applier['id'],
 			'job' => $this->job['id']
 		]);
 
 		$response = $this->post('/api/detach_user_job', [
-			'user' => $this->user['id'],
+			'user' => $this->applier['id'],
 			'job' => $this->job['id']
 		]);
 
         $this->assertDatabaseMissing('job_user', [
-			'user_id' => $this->user['id'],
+			'user_id' => $this->applier['id'],
 			'job_id' => $this->job['id']
 		]);
     }
