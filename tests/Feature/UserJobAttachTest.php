@@ -108,7 +108,7 @@ class UserJobAttachTest extends TestCase
 			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
 		]);
 
-		$inserted_jobs_counter = User::findOrFail($this->applier['id'])->jobs()->where('job_id', $this->job['id'])->count();
+		$inserted_jobs_counter = User::findOrFail($this->applier['id'])->jobs()->where('id', $this->job['id'])->count();
 		$this->assertEquals($inserted_jobs_counter, 1);
 	}
 }
