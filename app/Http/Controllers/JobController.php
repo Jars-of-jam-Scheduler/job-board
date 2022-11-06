@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateJobRequest;
 use App\Models\{Job, User};
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class JobController extends Controller
 {
@@ -44,6 +45,8 @@ class JobController extends Controller
      */
     public function store(StoreJobRequest $request)
     {
+		Gate::authorize('store-job');
+
 		abort_if(!User::where('id', $request->firm_id)->exists(), 400, 'The firm was not found.');
         return Job::create($request->validated());
     }
@@ -79,6 +82,8 @@ class JobController extends Controller
      */
     public function update(UpdateJobRequest $request, Job $job)
     {
+		Gate::authorize('update-job');
+
         $ret = $job->fill($request->validated());
 		return $job->update();
     }
@@ -91,11 +96,15 @@ class JobController extends Controller
      */
     public function destroy(Job $job)
     {
+		Gate::authorize('destroy-job');
+
         return $job->delete();
     }
 
 	public function attachJobSkill(Request $request)
 	{
+		Gate::authorize('attach-job-skill');
+
 		$validated = $request->validate([
 			'job' => 'required|integer|gt:0',
 			'skill' => 'required|integer|gt:0'
@@ -105,6 +114,8 @@ class JobController extends Controller
 
 	public function detachJobSkill(Request $request)
 	{
+		Gate::authorize('detach-job-skill');
+
 		$validated = $request->validate([
 			'job' => 'required|integer|gt:0',
 			'skill' => 'required|integer|gt:0'
