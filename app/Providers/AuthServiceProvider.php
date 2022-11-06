@@ -39,19 +39,19 @@ class AuthServiceProvider extends ServiceProvider
 		});
 
 		Gate::define('update-job', function(User $user, Job $job) {
-			return in_array('firm', $user->roles) && $job->user_id == $user->getKey();
+			return in_array('firm', $user->roles) && $job->firm_id == $user->getKey();
 		});
 
 		Gate::define('destroy-job', function(User $user, Job $job) {
-			return in_array('firm', $user->roles) && $job->user_id == $user->getKey();
+			return in_array('firm', $user->roles) && $job->firm_id == $user->getKey();
 		});
 
 		Gate::define('attach-job-skill', function(User $user, Job $job) {
-			return in_array('firm', $user->roles) && $job->user_id == $user->getKey();
+			return in_array('firm', $user->roles) && $job->firm_id == $user->getKey();
 		});
 
 		Gate::define('detach-job-skill', function(User $user, Job $job) {
-			return in_array('firm', $user->roles) && $job->user_id == $user->getKey();
+			return in_array('firm', $user->roles) && $job->firm_id == $user->getKey();
 		});
 	}
 
@@ -61,8 +61,8 @@ class AuthServiceProvider extends ServiceProvider
 			return in_array('applier', $user->roles);
 		});
 
-		Gate::define('detach-job', function(User $user) {
-			return in_array('applier', $user->roles) && $job->user_id == $user->getKey();
+		Gate::define('detach-job', function(User $user, Job $job) {
+			return in_array('applier', $user->roles) && $job->users()->where('id', $user->getKey())->exists();
 		});
 	}
 }
