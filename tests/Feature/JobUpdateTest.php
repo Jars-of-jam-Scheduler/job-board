@@ -25,6 +25,7 @@ class JobUpdateTest extends TestCase
 			'name' => 'The Firm',
 			'email' => 'test@thegummybears.test', 
 			'password' => 'azerty', 
+			'roles' => ['firm']
 		]);
 
 		$this->job_to_update = Job::create([

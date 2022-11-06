@@ -23,6 +23,7 @@ class JobSkillDetachTest extends TestCase
 			'name' => 'The Firm',
 			'email' => 'test@thegummybears.test', 
 			'password' => 'azerty', 
+			'roles' => ['firm']
 		]);
 
 		$this->job = Job::create([
