@@ -82,7 +82,7 @@ class JobController extends Controller
      */
     public function update(UpdateJobRequest $request, Job $job)
     {
-		Gate::authorize('update-job');
+		Gate::authorize('update-job', $job);
 
         $ret = $job->fill($request->validated());
 		return $job->update();
@@ -96,30 +96,32 @@ class JobController extends Controller
      */
     public function destroy(Job $job)
     {
-		Gate::authorize('destroy-job');
+		Gate::authorize('destroy-job', $job);
 
         return $job->delete();
     }
 
 	public function attachJobSkill(Request $request)
 	{
-		Gate::authorize('attach-job-skill');
-
 		$validated = $request->validate([
 			'job' => 'required|integer|gt:0',
 			'skill' => 'required|integer|gt:0'
 		]);
+
+		Gate::authorize('attach-job-skill', Job::findOrFail($request->job));
+
 		Job::findOrFail($validated['job'])->skills()->attach($validated['skill']);
 	}
 
 	public function detachJobSkill(Request $request)
 	{
-		Gate::authorize('detach-job-skill');
-
 		$validated = $request->validate([
 			'job' => 'required|integer|gt:0',
 			'skill' => 'required|integer|gt:0'
 		]);
+
+		Gate::authorize('detach-job-skill', Job::findOrFail($request->job));
+
 		Job::findOrFail($validated['job'])->skills()->detach($validated['skill']);
 	}
 }

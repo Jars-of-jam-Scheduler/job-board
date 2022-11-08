@@ -25,18 +25,19 @@ class UserController extends Controller
 		abort_if($user->hasAppliedFor($validated['job']), 400, __('You have already applied for that job.'));
 
 		$user->jobs()->attach($validated['job'], [
-			'message' => $validated['message']
+			'message' => $validated['message'] ?? ''
 		]);
 	}
 
 	public function detachJob(Request $request) : void
 	{
-		Gate::authorize('detach-job');
-
 		$validated = $request->validate([
 			'user' => 'required|integer|gt:0',
 			'job' => 'required|integer|gt:0'
 		]);
+
+		Gate::authorize('detach-job', Job::findOrFail($request->job));
+
 		User::findOrFail($validated['user'])->jobs()->detach($validated['job']);
 	}
 

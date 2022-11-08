@@ -35,34 +35,34 @@ class AuthServiceProvider extends ServiceProvider
 	private function defineFirmGates() : void
 	{
 		Gate::define('store-job', function(User $user) {
-			return in_array('firm', $user->roles);
+			return $user->hasRole('firm');
 		});
 
 		Gate::define('update-job', function(User $user, Job $job) {
-			return in_array('firm', $user->roles) && $job->firm_id == $user->getKey();
+			return $user->hasRole('firm') && $job->firm_id == $user->getKey();
 		});
 
 		Gate::define('destroy-job', function(User $user, Job $job) {
-			return in_array('firm', $user->roles) && $job->firm_id == $user->getKey();
+			return $user->hasRole('firm') && $job->firm_id == $user->getKey();
 		});
 
 		Gate::define('attach-job-skill', function(User $user, Job $job) {
-			return in_array('firm', $user->roles) && $job->firm_id == $user->getKey();
+			return $user->hasRole('firm') && $job->firm_id == $user->getKey();
 		});
 
 		Gate::define('detach-job-skill', function(User $user, Job $job) {
-			return in_array('firm', $user->roles) && $job->firm_id == $user->getKey();
+			return $user->hasRole('firm') && $job->firm_id == $user->getKey();
 		});
 	}
 
 	private function defineApplierGates() : void
 	{
 		Gate::define('attach-job', function(User $user) {
-			return in_array('applier', $user->roles);
+			return $user->hasRole('job_applier');
 		});
 
 		Gate::define('detach-job', function(User $user, Job $job) {
-			return in_array('applier', $user->roles) && $job->users()->where('id', $user->getKey())->exists();
+			return $user->hasRole('job_applier') && $job->users()->where('user_id', $user->getKey())->exists();
 		});
 	}
 }

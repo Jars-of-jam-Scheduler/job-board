@@ -2,41 +2,49 @@
 
 namespace Tests\Feature;
 
-use App\Models\{User, Job};
+use App\Models\{User, Job, Role};
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Laravel\Sanctum\Sanctum;
 
 class UserJobAttachTest extends TestCase
 {
 	use RefreshDatabase;
 
 	private User $applier;
-	private User $firm;
 	private Job $job;
 
 	public function setUp() : void
 	{
 		parent::setUp();
 
-		$this->applier = User::create([
-			'name' => 'Test User',
-			'email' => 'test@thegummybears.test', 
-			'password' => 'azerty', 
-			'roles' => ['applier']
+		Role::create([
+			'title' => 'firm'
+		]);
+		Role::create([
+			'title' => 'job_applier'
 		]);
 
-		$this->firm = User::create([
+		$this->applier = User::create([
 			'name' => 'Test User',
-			'email' => 'test@thegummybears.test', 
+			'email' => 'testapplier@thegummybears.test', 
 			'password' => 'azerty', 
-			'roles' => ['firm']
 		]);
+		$this->applier->roles()->save(Role::findOrFail('job_applier'));
+		Sanctum::actingAs($this->applier);
+
+		$firm = User::create([
+			'name' => 'Test User',
+			'email' => 'testfirm@thegummybears.test', 
+			'password' => 'azerty', 
+		]);
+		$firm->roles()->save(Role::findOrFail('firm'));
 
 		$this->job = Job::create([
 			'title' => 'My Super Job',
-			'firm_id' => $this->firm->getKey(),
+			'firm_id' => $firm->getKey(),
 			'presentation' => 'Its presentation', 
 			'min_salary' => 45000, 
 			'max_salary' => 45000, 
@@ -108,7 +116,7 @@ class UserJobAttachTest extends TestCase
 			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
 		]);
 
-		$inserted_jobs_counter = User::findOrFail($this->applier['id'])->jobs()->where('id', $this->job['id'])->count();
+		$inserted_jobs_counter = User::findOrFail($this->applier['id'])->jobs()->where('job_id', $this->job['id'])->count();
 		$this->assertEquals($inserted_jobs_counter, 1);
 	}
 }

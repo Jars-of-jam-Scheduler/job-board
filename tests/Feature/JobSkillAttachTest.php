@@ -2,11 +2,12 @@
 
 namespace Tests\Feature;
 
-use App\Models\{Job, Skill, User};
+use App\Models\{Job, Skill, User, Role};
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Laravel\Sanctum\Sanctum;
 
 class JobSkillAttachTest extends TestCase
 {
@@ -19,12 +20,20 @@ class JobSkillAttachTest extends TestCase
 	{
 		parent::setUp();
 
+		Role::create([
+			'title' => 'firm'
+		]);
+		Role::create([
+			'title' => 'job_applier'
+		]);
+
 		$firm = User::create([
 			'name' => 'The Firm',
 			'email' => 'test@thegummybears.test', 
 			'password' => 'azerty', 
-			'roles' => ['firm']
 		]);
+		$firm->roles()->save(Role::findOrFail('firm'));
+		Sanctum::actingAs($firm);
 
 		$this->job = Job::create([
 			'title' => 'My Super Job',

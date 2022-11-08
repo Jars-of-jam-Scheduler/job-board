@@ -2,12 +2,13 @@
 
 namespace Tests\Feature;
 
-use App\Models\{Job, User};
+use App\Models\{Job, User, Role};
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Log;
+use Laravel\Sanctum\Sanctum;
 
 class JobDeleteTest extends TestCase
 {
@@ -19,12 +20,20 @@ class JobDeleteTest extends TestCase
 	{
 		parent::setUp();
 
+		Role::create([
+			'title' => 'firm'
+		]);
+		Role::create([
+			'title' => 'job_applier'
+		]);
+
 		$firm = User::create([
 			'name' => 'The Firm',
 			'email' => 'test@thegummybears.test', 
 			'password' => 'azerty', 
-			'roles' => ['firm']
 		]);
+		$firm->roles()->save(Role::findOrFail('firm'));
+		Sanctum::actingAs($firm);
 
 		$this->job_to_delete = Job::create([
 			'title' => 'My Super Job',
@@ -51,7 +60,6 @@ class JobDeleteTest extends TestCase
 	public function test_delete_job_deletion_data() : void
     {
         $response = $this->delete(route('jobs.destroy', ['job' => $this->job_to_delete['id']]));
-		//$response->dd();
         $this->assertDatabaseMissing('jobs', ['id' => $this->job_to_delete['id']]);
     }
 

@@ -21,7 +21,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-		'roles'
     ];
 
     /**
@@ -48,9 +47,19 @@ class User extends Authenticatable
 		return $this->belongsToMany(Job::class);
 	}
 
+	public function roles()
+	{
+		return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_title');
+	}
+
 	public function hasAppliedFor(int $job_id) : bool
 	{
 		return $this->jobs()->where('job_id', $job_id)->exists();
+	}
+
+	public function hasRole(string $role_title) : bool
+	{
+		return $this->roles()->where('title', $role_title)->exists();
 	}
 
 }
