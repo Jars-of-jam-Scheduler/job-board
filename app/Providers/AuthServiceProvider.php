@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\{User, Job};
+use App\Models\{User, Job, JobUser};
 
 // use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -52,6 +52,14 @@ class AuthServiceProvider extends ServiceProvider
 
 		Gate::define('detach-job-skill', function(User $user, Job $job) {
 			return $user->hasRole('firm') && $job->firm_id == $user->getKey();
+		});
+
+		Gate::define('accept-job-application', function(User $user, JobUser $job_application) {
+			return $user->hasRole('firm') && $job_application->job->firm_id == $user->getKey();
+		});
+
+		Gate::define('refuse-job-application', function(User $user, JobUser $job_application) {
+			return $user->hasRole('firm') && $job_application->job->firm_id == $user->getKey();
 		});
 	}
 

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{Job, User};
+use App\Models\{Job, User, JobUser, AcceptedRefusedJobsApplicationsHistory};
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -41,4 +41,22 @@ class UserController extends Controller
 		User::findOrFail($validated['user'])->jobs()->detach($validated['job']);
 	}
 
+	public function acceptOrRefuseJobApplication(Request $request) : AcceptedRefusedJobsApplicationsHistory
+	{
+		$request->validate([
+			'job_application' => 'required|integer|gt:0',
+			'firm_message' => 'required|string', 
+			'accept_or_refuse' => 'required|boolean'
+		]);
+
+		$job_application = JobUser::findOrFail($request->job_application);
+
+		Gate::authorize('accept-job-application', $job_application);
+
+		return AcceptedRefusedJobsApplicationsHistory::create([
+			'accepted_or_refused' => $request->accept_or_refuse, 
+			'firm_message' => $request->firm_message,
+			'job_application_id' => $job_application->id
+		]);
+	}
 }

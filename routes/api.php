@@ -46,6 +46,8 @@ Route::middleware('auth:sanctum')->group(function() {
 	Route::post('/attach_user_job', [UserController::class, 'attachJob']);
 	Route::post('/detach_user_job', [UserController::class, 'detachJob']);
 
+	Route::post('/accept_or_refuse_job_application', [UserController::class, 'acceptOrRefuseJobApplication']);
+
 	Route::get('/user', function (Request $request) {
 		return $request->user();
 	});
