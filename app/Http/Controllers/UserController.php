@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\{Job, User, JobUser, AcceptedRefusedJobsApplicationsHistory};
-use App\Notifications\{AcceptedJobApplication, RefusedJobApplication};
+use App\Notifications\{NewJobApplication, AcceptedJobApplication, RefusedJobApplication};
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Gate;
 class UserController extends Controller
 {
     
-	public function attachJob(Request $request) : void
+	public function attachJob(Request $request) : JobUser
 	{
 		Gate::authorize('attach-job');
 
@@ -28,6 +28,19 @@ class UserController extends Controller
 		$user->jobs()->attach($validated['job'], [
 			'message' => $validated['message'] ?? ''
 		]);
+
+		$job_application = JobUser::where([
+			[
+				'job_id', '=', $request->job
+			],
+			[
+				'user_id', '=', $request->user
+			]
+		])->firstOrFail();
+
+		Job::findOrFail($request->job)->firm->notify(new NewJobApplication($job_application));
+
+		return $job_application;
 	}
 
 	public function detachJob(Request $request) : void

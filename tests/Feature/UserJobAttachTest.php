@@ -2,23 +2,27 @@
 
 namespace Tests\Feature;
 
-use App\Models\{User, Job, Role};
+use App\Models\{User, Job, Role, JobUser};
+use App\Notifications\NewJobApplication;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Laravel\Sanctum\Sanctum;
+use Illuminate\Support\Facades\Notification;
 
 class UserJobAttachTest extends TestCase
 {
 	use RefreshDatabase;
 
-	private User $applier;
+	private User $applier, $firm;
 	private Job $job;
 
 	public function setUp() : void
 	{
 		parent::setUp();
+
+		Notification::fake();
 
 		Role::create([
 			'title' => 'firm'
@@ -35,16 +39,16 @@ class UserJobAttachTest extends TestCase
 		$this->applier->roles()->save(Role::findOrFail('job_applier'));
 		Sanctum::actingAs($this->applier);
 
-		$firm = User::create([
+		$this->firm = User::create([
 			'name' => 'Test User',
 			'email' => 'testfirm@thegummybears.test', 
 			'password' => 'azerty', 
 		]);
-		$firm->roles()->save(Role::findOrFail('firm'));
+		$this->firm->roles()->save(Role::findOrFail('firm'));
 
 		$this->job = Job::create([
 			'title' => 'My Super Job',
-			'firm_id' => $firm->getKey(),
+			'firm_id' => $this->firm->getKey(),
 			'presentation' => 'Its presentation', 
 			'min_salary' => 45000, 
 			'max_salary' => 45000, 
@@ -118,5 +122,20 @@ class UserJobAttachTest extends TestCase
 
 		$inserted_jobs_counter = User::findOrFail($this->applier['id'])->jobs()->where('job_id', $this->job['id'])->count();
 		$this->assertEquals($inserted_jobs_counter, 1);
+	}
+
+	public function test_attach_user_job_notification_sent()
+	{
+		$job_application = $this->post('/api/attach_user_job', [
+			'user' => $this->applier['id'],
+			'job' => $this->job['id'],
+			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
+		]);
+
+		Notification::assertSentTo(
+            [$this->firm], function(NewJobApplication $notification, $channels) use ($job_application) {
+				return $notification->getJobApplication()->id === $job_application['id'];
+			}
+        );
 	}
 }
