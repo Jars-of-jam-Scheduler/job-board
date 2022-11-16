@@ -89,7 +89,7 @@ class JobStoreTest extends TestCase
 	public function test_store_job_storage_data() : void
     {
         $response = $this->post(route('jobs.store'), $this->job);
-        $this->assertDatabaseHas('jobs', ['id' => $response->json('id'), ...$this->job]);
+        $this->assertDatabaseHas('firms_jobs', ['id' => $response->json('id'), ...$this->job]);
     }
 
 	public function test_store_job_missing_firm_validation_error() : void
@@ -101,7 +101,7 @@ class JobStoreTest extends TestCase
 	public function test_store_job_missing_firm_data() : void
 	{
 		$response = $this->post(route('jobs.store'), $this->job_with_missing_firm);
-        $this->assertDatabaseMissing('jobs', $this->job_with_missing_firm);
+        $this->assertDatabaseMissing('firms_jobs', $this->job_with_missing_firm);
 	}
 
 	public function test_store_job_unexisting_firm_status() : void
@@ -113,7 +113,7 @@ class JobStoreTest extends TestCase
 	public function test_store_job_unexisting_firm_data() : void
 	{
 		$response = $this->post(route('jobs.store'), $this->job_with_unexisting_firm);
-        $this->assertDatabaseMissing('jobs', $this->job_with_unexisting_firm);
+        $this->assertDatabaseMissing('firms_jobs', $this->job_with_unexisting_firm);
 	}
 
 }

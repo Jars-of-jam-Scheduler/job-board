@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
 
-        Schema::create('jobs', function (Blueprint $table) {
+        Schema::create('firms_jobs', function (Blueprint $table) {
 			$table->id();
 
 			$table->unsignedBigInteger('firm_id');
@@ -42,6 +42,6 @@ return new class extends Migration
      */
     public function down()
     {
-		Schema::drop('jobs');
+		Schema::drop('firms_jobs');
     }
 };

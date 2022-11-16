@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Job extends Model
 {
     use HasFactory;
+
+	protected $table = 'firms_jobs';
 
 	protected $fillable = [
 		'title',
@@ -34,4 +37,15 @@ class Job extends Model
 		return $this->belongsToMany(User::class)->using(JobUser::class);
 	}
 
+	protected function title(): Attribute
+	{
+		return Attribute::make(
+			get: fn ($value) => ucfirst($value)
+		);
+	}
+
+	public function firm()
+	{
+		return $this->belongsTo(User::class);
+	}
 }

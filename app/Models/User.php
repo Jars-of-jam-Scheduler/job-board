@@ -62,4 +62,10 @@ class User extends Authenticatable
 		return $this->roles()->where('title', $role_title)->exists();
 	}
 
+	protected function name(): Attribute
+	{
+		return Attribute::make(
+			get: fn ($value) => ucfirst($value)
+		);
+	}
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\{Job, User, JobUser, AcceptedRefusedJobsApplicationsHistory};
+use App\Notifications\{AcceptedJobApplication, RefusedJobApplication};
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -53,10 +54,20 @@ class UserController extends Controller
 
 		Gate::authorize('accept-job-application', $job_application);
 
-		return AcceptedRefusedJobsApplicationsHistory::create([
+		$new_job_application_accept_or_refuse = AcceptedRefusedJobsApplicationsHistory::create([
 			'accepted_or_refused' => $request->accept_or_refuse, 
 			'firm_message' => $request->firm_message,
 			'job_application_id' => $job_application->id
 		]);
+
+		if($request->accept_or_refuse) {
+			$job_application->user->notify(new AcceptedJobApplication($job_application));
+
+		} else {
+			$job_application->user->notify(new RefusedJobApplication($job_application));
+
+		}
+
+		return $new_job_application_accept_or_refuse;
 	}
 }

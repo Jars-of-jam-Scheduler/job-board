@@ -3,11 +3,13 @@
 namespace Tests\Feature;
 
 use App\Models\{User, Job, Role, JobUser};
+use App\Notifications\AcceptedJobApplication;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Laravel\Sanctum\Sanctum;
+use Illuminate\Support\Facades\Notification;
 
 class AcceptJobApplication extends TestCase
 {
@@ -19,6 +21,8 @@ class AcceptJobApplication extends TestCase
 	public function setUp() : void
 	{
 		parent::setUp();
+
+		Notification::fake();
 
 		Role::create([
 			'title' => 'firm'
@@ -71,7 +75,7 @@ class AcceptJobApplication extends TestCase
 			['job_id', $this->job['id']],
 			['user_id', $this->applier['id']],
 		])->firstOrFail();
-		
+
         $response = $this->post('/api/accept_or_refuse_job_application', [
 			'job_application' => $job_application['id'],
 			'firm_message' => 'The message the firm writes, to be read by the job applier. Both in the cases that the firm has accepted or refused the job application.',
@@ -98,5 +102,25 @@ class AcceptJobApplication extends TestCase
 			'firm_message' => 'The message the firm writes, to be read by the job applier. Both in the cases that the firm has accepted or refused the job application.',
 			'accepted_or_refused' => true,
 		]);
+	}
+
+	public function test_job_accept_notification_sent()
+	{
+		$job_application = JobUser::where([
+			['job_id', $this->job['id']],
+			['user_id', $this->applier['id']],
+		])->firstOrFail();
+		
+        $response = $this->post('/api/accept_or_refuse_job_application', [
+			'job_application' => $job_application['id'],
+			'firm_message' => 'The message the firm writes, to be read by the job applier. Both in the cases that the firm has accepted or refused the job application.',
+			'accept_or_refuse' => true, 
+		]);
+
+		Notification::assertSentTo(
+            [$this->applier], function(AcceptedJobApplication $notification, $channels) use ($job_application) {
+				return $notification->getJobApplication()->id === $job_application->id;
+			}
+        );
 	}
 }

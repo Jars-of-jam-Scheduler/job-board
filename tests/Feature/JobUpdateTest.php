@@ -77,7 +77,7 @@ class JobUpdateTest extends TestCase
 	public function test_update_job_update_data() : void
     {
         $response = $this->put(route('jobs.update', ['job' => $this->job_to_update['id']]), $this->job_update_new_data);
-        $this->assertDatabaseHas('jobs', [...$this->job_to_update->toArray(), ...$this->job_update_new_data]);
+        $this->assertDatabaseHas('firms_jobs', [...$this->job_to_update->toArray(), ...$this->job_update_new_data]);
     }
 
 	public function test_update_job_with_firm_status() : void
@@ -89,13 +89,13 @@ class JobUpdateTest extends TestCase
 	public function test_update_job_with_firm_update_data_missing() : void
     {
         $response = $this->put(route('jobs.update', ['job' => $this->job_to_update['id']]), $this->job_with_firm_update_new_data);
-        $this->assertDatabaseMissing('jobs', [...$this->job_to_update->toArray(), ...$this->job_with_firm_update_new_data]);
+        $this->assertDatabaseMissing('firms_jobs', [...$this->job_to_update->toArray(), ...$this->job_with_firm_update_new_data]);
     }
 
 	public function test_update_job_with_firm_update_data_exists() : void
     {
         $response = $this->put(route('jobs.update', ['job' => $this->job_to_update['id']]), $this->job_with_firm_update_new_data);
-        $this->assertDatabaseHas('jobs', $this->job_to_update->toArray());
+        $this->assertDatabaseHas('firms_jobs', $this->job_to_update->toArray());
     }
 
 }
