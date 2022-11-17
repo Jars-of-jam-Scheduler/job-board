@@ -46,6 +46,10 @@ class AuthServiceProvider extends ServiceProvider
 			return $user->hasRole('firm') && $job->firm_id == $user->getKey();
 		});
 
+		Gate::define('restore-job', function(User $user, Job $job) {
+			return $user->hasRole('firm') && $job->firm_id == $user->getKey();
+		});
+
 		Gate::define('attach-job-skill', function(User $user, Job $job) {
 			return $user->hasRole('firm') && $job->firm_id == $user->getKey();
 		});

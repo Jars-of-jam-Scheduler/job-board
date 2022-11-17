@@ -101,6 +101,13 @@ class JobController extends Controller
         return $job->delete();
     }
 
+	public function restore(int $job_id)
+	{
+		$job = Job::withTrashed()->findOrFail($job_id);
+		Gate::authorize('restore-job', $job);
+		return $job->restore();
+	}
+
 	public function attachJobSkill(Request $request)
 	{
 		$validated = $request->validate([

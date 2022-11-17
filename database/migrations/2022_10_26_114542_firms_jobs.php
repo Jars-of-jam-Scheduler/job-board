@@ -16,6 +16,7 @@ return new class extends Migration
 
         Schema::create('firms_jobs', function (Blueprint $table) {
 			$table->id();
+			$table->softDeletes();
 
 			$table->unsignedBigInteger('firm_id');
 			$table->foreign('firm_id')->references('id')->on('users');

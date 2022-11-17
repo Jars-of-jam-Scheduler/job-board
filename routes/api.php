@@ -40,6 +40,8 @@ Route::apiResource('jobs', JobController::class);  // Routes are Sanctumed in th
 
 Route::middleware('auth:sanctum')->group(function() {
 
+	Route::put('/restore_job/{job_id}', [JobController::class, 'restore'])->name('jobs_restore');
+
 	Route::post('/attach_job_skill', [JobController::class, 'attachJobSkill']);
 	Route::post('/detach_job_skill', [JobController::class, 'detachJobSkill']);
 	
