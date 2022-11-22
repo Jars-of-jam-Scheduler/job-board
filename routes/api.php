@@ -39,22 +39,7 @@ Route::post('/sanctum/token', function(Request $request) {
 Route::apiResource('jobs', JobController::class);  // Routes are Sanctumed in the controller
 
 Route::middleware('auth:sanctum')->group(function() {
-
-	Route::put('/restore_job/{job_id}', [JobController::class, 'restore'])->name('jobs_restore');
-
-	Route::post('/attach_job_skill', [JobController::class, 'attachJobSkill']);
-	Route::post('/detach_job_skill', [JobController::class, 'detachJobSkill']);
-	
-	Route::post('/attach_user_job', [UserController::class, 'attachJob']);
-	Route::post('/detach_user_job', [UserController::class, 'detachJob']);
-
+	Route::apiResource('users', UserController::class)->only('update');
+	Route::put('/jobs/{job_id}/restore', [JobController::class, 'restore'])->whereUuid('job_id')->name('jobs_restore');
 	Route::post('/accept_or_refuse_job_application', [UserController::class, 'acceptOrRefuseJobApplication']);
-
-	Route::get('/user', function (Request $request) {
-		return $request->user();
-	});
-	
 });
-
-
-

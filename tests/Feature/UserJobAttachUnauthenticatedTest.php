@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Laravel\Sanctum\Sanctum;
 
-class UserJobDetachUnauthenticatedTest extends TestCase
+class UserJobAttachUnauthenticatedTest extends TestCase
 {
 	use RefreshDatabase;
 
@@ -33,7 +33,6 @@ class UserJobDetachUnauthenticatedTest extends TestCase
 			'password' => 'azerty', 
 		]);
 		$this->applier->roles()->save(Role::findOrFail('job_applier'));
-		Sanctum::actingAs($this->applier);
 
 		$firm = User::create([
 			'name' => 'Test User',
@@ -60,9 +59,12 @@ class UserJobDetachUnauthenticatedTest extends TestCase
 
 	public function test_attach_user_job_status()
     {
-		$response = $this->post('/api/attach_user_job', [
-			'user' => $this->applier['id'],
-			'job' => $this->job['id']
+		$response = $this->put(route('users.update', ['user' => $this->applier['id']]), [
+			'job' => [
+				'id' => $this->job['id'],
+				'attach_or_detach' => true,
+				'message' => 'I want to apply for this job because foobar.'
+			]
 		]);
         $response->assertStatus(401);
     }

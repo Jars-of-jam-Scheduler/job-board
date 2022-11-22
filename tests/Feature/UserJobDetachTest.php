@@ -60,29 +60,38 @@ class UserJobDetachTest extends TestCase
 
     public function test_detach_user_job_status()
     {
-        $this->post('/api/attach_user_job', [
-			'user' => $this->applier['id'],
-			'job' => $this->job['id']
+		$this->put(route('users.update', ['user' => $this->applier['id']]), [
+			'job' => [
+				'id' => $this->job['id'],
+				'attach_or_detach' => true,
+				'message' => 'I want to apply for this job because foobar.'
+			]
 		]);
-
-		$response = $this->post('/api/detach_user_job', [
-			'user' => $this->applier['id'],
-			'job' => $this->job['id']
+		
+		$response = $this->put(route('users.update', ['user' => $this->applier['id']]), [
+			'job' => [
+				'id' => $this->job['id'],
+				'attach_or_detach' => false,
+			]
 		]);
-
         $response->assertStatus(200);
     }
 
 	public function test_detach_user_job_data()
     {
-		$this->post('/api/attach_user_job', [
-			'user' => $this->applier['id'],
-			'job' => $this->job['id']
+		$this->put(route('users.update', ['user' => $this->applier['id']]), [
+			'job' => [
+				'id' => $this->job['id'],
+				'attach_or_detach' => true,
+				'message' => 'I want to apply for this job because foobar.'
+			]
 		]);
 
-		$response = $this->post('/api/detach_user_job', [
-			'user' => $this->applier['id'],
-			'job' => $this->job['id']
+		$this->put(route('users.update', ['user' => $this->applier['id']]), [
+			'job' => [
+				 'id' => $this->job['id'],
+				 'attach_or_detach' => false
+			]
 		]);
 
         $this->assertDatabaseMissing('job_user', [

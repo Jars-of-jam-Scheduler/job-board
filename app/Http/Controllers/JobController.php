@@ -82,10 +82,15 @@ class JobController extends Controller
      */
     public function update(UpdateJobRequest $request, Job $job)
     {
-		Gate::authorize('update-job', $job);
+		Gate::authorize('update-job-firm', $job);
 
-        $ret = $job->fill($request->validated());
-		return $job->update();
+		if($request->has('skill')) {
+			$this->attachOrDetachJobSkill();
+		}
+		
+		$job->fill($request->validated());
+		$job->update();
+		return true;
     }
 
     /**
@@ -103,32 +108,18 @@ class JobController extends Controller
 
 	public function restore(int $job_id)
 	{
+		Gate::authorize('restore-job-firm', $job);
+
 		$job = Job::withTrashed()->findOrFail($job_id);
-		Gate::authorize('restore-job', $job);
 		return $job->restore();
 	}
 
-	public function attachJobSkill(Request $request)
+	public function attachOrDetachJobSkill(Request $request)
 	{
-		$validated = $request->validate([
-			'job' => 'required|integer|gt:0',
-			'skill' => 'required|integer|gt:0'
-		]);
-
-		Gate::authorize('attach-job-skill', Job::findOrFail($request->job));
-
-		Job::findOrFail($validated['job'])->skills()->attach($validated['skill']);
-	}
-
-	public function detachJobSkill(Request $request)
-	{
-		$validated = $request->validate([
-			'job' => 'required|integer|gt:0',
-			'skill' => 'required|integer|gt:0'
-		]);
-
-		Gate::authorize('detach-job-skill', Job::findOrFail($request->job));
-
-		Job::findOrFail($validated['job'])->skills()->detach($validated['skill']);
+		if($request->attach_or_detach) {
+			Job::findOrFail($validated['job'])->skills()->attach($validated['skill']);
+		} elseif($request->operation == 'detach') {
+			Job::findOrFail($validated['job'])->skills()->detach($validated['skill']);
+		}
 	}
 }

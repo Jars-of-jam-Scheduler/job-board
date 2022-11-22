@@ -28,6 +28,10 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
+		Gate::define('update-user', function(User $user, User $user_db) {
+			return $user_db->getKey() == $user->getKey();
+		});
+
 		$this->defineFirmGates();
 		$this->defineApplierGates();
     }
@@ -38,31 +42,15 @@ class AuthServiceProvider extends ServiceProvider
 			return $user->hasRole('firm');
 		});
 
-		Gate::define('update-job', function(User $user, Job $job) {
+		Gate::define('update-job-firm', function(User $user, Job $job) {
 			return $user->hasRole('firm') && $job->firm_id == $user->getKey();
 		});
 
-		Gate::define('destroy-job', function(User $user, Job $job) {
+		Gate::define('restore-job-firm', function(User $user, Job $job) {
 			return $user->hasRole('firm') && $job->firm_id == $user->getKey();
 		});
 
-		Gate::define('restore-job', function(User $user, Job $job) {
-			return $user->hasRole('firm') && $job->firm_id == $user->getKey();
-		});
-
-		Gate::define('attach-job-skill', function(User $user, Job $job) {
-			return $user->hasRole('firm') && $job->firm_id == $user->getKey();
-		});
-
-		Gate::define('detach-job-skill', function(User $user, Job $job) {
-			return $user->hasRole('firm') && $job->firm_id == $user->getKey();
-		});
-
-		Gate::define('accept-job-application', function(User $user, JobUser $job_application) {
-			return $user->hasRole('firm') && $job_application->job->firm_id == $user->getKey();
-		});
-
-		Gate::define('refuse-job-application', function(User $user, JobUser $job_application) {
+		Gate::define('accept-or-refuse-job-application', function(User $user, JobUser $job_application) {
 			return $user->hasRole('firm') && $job_application->job->firm_id == $user->getKey();
 		});
 	}

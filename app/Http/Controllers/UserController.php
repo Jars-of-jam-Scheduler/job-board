@@ -4,76 +4,67 @@ namespace App\Http\Controllers;
 
 use App\Models\{Job, User, JobUser, AcceptedRefusedJobsApplicationsHistory};
 use App\Notifications\{NewJobApplication, AcceptedJobApplication, RefusedJobApplication};
+use App\Http\Requests\UpdateUserRequest;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
-    
-	public function attachJob(Request $request) : JobUser
+	public function update(UpdateUserRequest $request, User $user)
 	{
-		Gate::authorize('attach-job');
+		Gate::authorize('update-user', $user);
 
-		$validated = $request->validate([
-			'user' => 'required|integer|gt:0',
-			'job' => 'required|integer|gt:0',
-			'message' => 'nullable|string'
-		]);
+		if($request->has('job')) {
+			$this->attachOrDetachJob($request);
+		}
 
-		$user = User::findOrFail($validated['user']);
-
-		abort_if($user->hasAppliedFor($validated['job']), 400, __('You have already applied for that job.'));
-
-		$user->jobs()->attach($validated['job'], [
-			'message' => $validated['message'] ?? ''
-		]);
-
-		$job_application = JobUser::where([
-			[
-				'job_id', '=', $request->job
-			],
-			[
-				'user_id', '=', $request->user
-			]
-		])->firstOrFail();
-
-		Job::findOrFail($request->job)->firm->notify(new NewJobApplication($job_application));
-
-		return $job_application;
+		$user->fill($request->validated());
+		$user->update();
+		return true;
 	}
-
-	public function detachJob(Request $request) : void
+    
+	public function attachOrDetachJob(Request $request)
 	{
-		$validated = $request->validate([
-			'user' => 'required|integer|gt:0',
-			'job' => 'required|integer|gt:0'
-		]);
+		$authenticated_user = auth()->user();
+		if($request->input('job.attach_or_detach')) {
+			Gate::authorize('attach-job');
 
-		Gate::authorize('detach-job', Job::findOrFail($request->job));
+			abort_if($authenticated_user->hasAppliedFor($request->input('job.id')), 400, __('You have already applied for that job.'));
+			$authenticated_user->jobs()->attach($request->input('job.id'), [
+				'message' => $request->input('job.message')
+			]);
 
-		User::findOrFail($validated['user'])->jobs()->detach($validated['job']);
+			$job_application = JobUser::where([
+				[
+					'job_id', '=', $request->input('job.id')
+				],
+				[
+					'user_id', '=', $authenticated_user->getKey()
+				]
+			])->firstOrFail();
+			Job::findOrFail($request->input('job.id'))->firm->notify(new NewJobApplication($job_application));
+		} else {
+			$job = Job::findOrFail($request->input('job.id'));
+			Gate::authorize('detach-job', $job);
+
+			$authenticated_user->jobs()->detach($request->input('job.id'));
+		}
 	}
 
 	public function acceptOrRefuseJobApplication(Request $request) : AcceptedRefusedJobsApplicationsHistory
 	{
-		$request->validate([
-			'job_application' => 'required|integer|gt:0',
-			'firm_message' => 'required|string', 
-			'accept_or_refuse' => 'required|boolean'
-		]);
+		$job_application = JobUser::findOrFail($request->input('job_application.job_application_id'));
 
-		$job_application = JobUser::findOrFail($request->job_application);
-
-		Gate::authorize('accept-job-application', $job_application);
+		Gate::authorize('accept-or-refuse-job-application', $job_application);
 
 		$new_job_application_accept_or_refuse = AcceptedRefusedJobsApplicationsHistory::create([
-			'accepted_or_refused' => $request->accept_or_refuse, 
-			'firm_message' => $request->firm_message,
-			'job_application_id' => $job_application->id
+			'accepted_or_refused' => $request->input('job_application.accept_or_refuse'), 
+			'firm_message' => $request->input('job_application.firm_message'),
+			'job_application_id' => $job_application->input('job_application.job_application_id')
 		]);
 
-		if($request->accept_or_refuse) {
+		if($request->input('job_application.accept_or_refuse')) {
 			$job_application->user->notify(new AcceptedJobApplication($job_application));
 
 		} else {

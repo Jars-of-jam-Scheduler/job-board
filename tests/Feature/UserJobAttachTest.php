@@ -64,10 +64,12 @@ class UserJobAttachTest extends TestCase
 
     public function test_attach_user_job_status()
     {
-        $response = $this->post('/api/attach_user_job', [
-			'user' => $this->applier['id'],
-			'job' => $this->job['id'],
-			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
+		$response = $this->put(route('users.update', ['user' => $this->applier['id']]), [
+			'job' => [
+				'id' => $this->job['id'],
+				'attach_or_detach' => true,
+				'message' => 'I want to apply for this job because foobar.'
+			]
 		]);
 
         $response->assertStatus(200);
@@ -75,62 +77,74 @@ class UserJobAttachTest extends TestCase
 
 	public function test_attach_user_job_data()
     {
-		$this->post('/api/attach_user_job', [
-			'user' => $this->applier['id'],
-			'job' => $this->job['id'],
-			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
+		$this->put(route('users.update', ['user' => $this->applier['id']]), [
+			'job' => [
+				'id' => $this->job['id'],
+				'attach_or_detach' => true,
+				'message' => 'I want to apply for this job because foobar.'
+			]
 		]);
 
         $this->assertDatabaseHas('job_user', [
 			'user_id' => $this->applier['id'],
 			'job_id' => $this->job['id'],
-			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
+			'message' => 'I want to apply for this job because foobar.'
 		]);
     }
 
 	public function test_attach_user_job_once_status()
 	{
-		$this->post('/api/attach_user_job', [
-			'user' => $this->applier['id'],
-			'job' => $this->job['id'],
-			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
+		$this->put(route('users.update', ['user' => $this->applier['id']]), [
+			'job' => [
+				'id' => $this->job['id'],
+				'attach_or_detach' => true,
+				'message' => 'I want to apply for this job because foobar.'
+			]
 		]);
 
-		$response = $this->post('/api/attach_user_job', [
-			'user' => $this->applier['id'],
-			'job' => $this->job['id'],
-			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
+		$response = $this->put(route('users.update', ['user' => $this->applier['id']]), [
+			'job' => [
+				'id' => $this->job['id'],
+				'attach_or_detach' => true,
+				'message' => 'I want to apply for this job because foobar.'
+			]
 		]);
 
 		$response->assertStatus(400);
-
 	}
 
 	public function test_attach_user_job_once_data()
 	{
-		$this->post('/api/attach_user_job', [
-			'user' => $this->applier['id'],
-			'job' => $this->job['id'],
-			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
+		$this->put(route('users.update', ['user' => $this->applier['id']]), [
+			'job' => [
+				'id' => $this->job['id'],
+				'attach_or_detach' => true,
+				'message' => 'I want to apply for this job because foobar.'
+			]
 		]);
 
-		$response = $this->post('/api/attach_user_job', [
-			'user' => $this->applier['id'],
-			'job' => $this->job['id'],
-			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
+		$this->put(route('users.update', ['user' => $this->applier['id']]), [
+			'job' => [
+				'id' => $this->job['id'],
+				'attach_or_detach' => true,
+				'message' => 'I want to apply for this job because foobar.'
+			]
 		]);
 
-		$inserted_jobs_counter = User::findOrFail($this->applier['id'])->jobs()->where('job_id', $this->job['id'])->count();
+		$inserted_jobs_counter = auth()->user()->jobs()->where('job_id', $this->job['id'])->count();
 		$this->assertEquals($inserted_jobs_counter, 1);
 	}
 
 	public function test_attach_user_job_notification_sent()
 	{
-		$job_application = $this->post('/api/attach_user_job', [
-			'user' => $this->applier['id'],
-			'job' => $this->job['id'],
-			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
+		$this->put(route('users.update', ['user' => $this->applier['id']]), [
+			'job' => [
+				'id' => $this->job['id'],
+				'attach_or_detach' => true,
+				'message' => 'I want to apply for this job because foobar.'
+			]
 		]);
+		$job_application = auth()->user()->jobs()->where('job_id', $this->job['id'])->firstOrFail();
 
 		Notification::assertSentTo(
             [$this->firm], function(NewJobApplication $notification, $channels) use ($job_application) {

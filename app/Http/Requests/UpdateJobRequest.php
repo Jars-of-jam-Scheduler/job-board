@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Http\Request;
 
 class UpdateJobRequest extends FormRequest
 {
@@ -22,9 +23,11 @@ class UpdateJobRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(Request $request)
     {
-        return [
+		$rules = [];
+
+        $rules = array_merge($rules, [
             'title' => 'nullable|string', 
 			'firm_id' => 'prohibited',
 			'presentation' => 'nullable|string', 
@@ -37,7 +40,19 @@ class UpdateJobRequest extends FormRequest
 			'contractual_working_time' => 'nullable|string',
 			'collective_agreement' => ['nullable', new Enum(CollectiveAgreement::class)],
 			'flexible_hours' => 'nullable|boolean',
-			'working_hours_modulation_system' => 'nullable|boolean'
-        ];
+			'working_hours_modulation_system' => 'nullable|boolean',
+
+			'skill' => 'nullable|array:id,job,attach_or_detach'
+        ]);
+
+		if($request->has('skill')) {
+			$rules = array_merge($rules, [
+				'skill.id' => 'required|integer|gt:0',
+				'skill.job' => 'required|integer|gt:0',
+				'skill.attach_or_detach' => 'required|boolean'
+			]);
+		}
+
+		return $rules;
     }
 }
