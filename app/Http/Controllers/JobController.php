@@ -85,7 +85,7 @@ class JobController extends Controller
 		Gate::authorize('update-job-firm', $job);
 
 		if($request->has('skill')) {
-			$this->attachOrDetachJobSkill();
+			$this->attachOrDetachJobSkill($request, $job);
 		}
 		
 		$job->fill($request->validated());
@@ -108,18 +108,17 @@ class JobController extends Controller
 
 	public function restore(int $job_id)
 	{
-		Gate::authorize('restore-job-firm', $job);
-
 		$job = Job::withTrashed()->findOrFail($job_id);
+		Gate::authorize('restore-job-firm', $job);
 		return $job->restore();
 	}
 
-	public function attachOrDetachJobSkill(Request $request)
+	public function attachOrDetachJobSkill(Request $request, Job $job)
 	{
-		if($request->attach_or_detach) {
-			Job::findOrFail($validated['job'])->skills()->attach($validated['skill']);
-		} elseif($request->operation == 'detach') {
-			Job::findOrFail($validated['job'])->skills()->detach($validated['skill']);
+		if($request->input('skill.attach_or_detach')) {
+			$job->skills()->attach($request->input('skill.id'));
+		} else {
+			$job->skills()->detach($request->input('skill.id'));
 		}
 	}
 }

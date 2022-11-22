@@ -56,11 +56,12 @@ class JobSkillDetachUnauthenticatedTest extends TestCase
 
     public function test_detach_job_skill_status()
     {
-		$response = $this->post('/api/detach_job_skill', [
-			'job' => $this->job['id'], 
-			'skill' => $this->skill['id'], 
+		$response = $this->put(route('jobs.update', ['job' => $this->job['id']]), [
+			'skill' => [
+				'id' => $this->skill['id'],
+				'attach_or_detach' => false
+			]
 		]);
-
         $response->assertStatus(401);
     }
 }

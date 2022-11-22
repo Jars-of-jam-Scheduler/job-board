@@ -2,19 +2,18 @@
 
 namespace Tests\Feature;
 
-use App\Models\{Job, Skill, User, Role};
+use App\Models\{Job, User, Role};
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Laravel\Sanctum\Sanctum;
 
-class JobSkillAttachUnauthenticatedTest extends TestCase
+class JobRestoreUnauthenticatedTest extends TestCase
 {
-    use RefreshDatabase;
+	use RefreshDatabase;
 
-	private Job $job;
-	private Skill $skill;
+	private Job $job_to_delete;
 
 	public function setUp() : void
 	{
@@ -34,7 +33,7 @@ class JobSkillAttachUnauthenticatedTest extends TestCase
 		]);
 		$firm->roles()->save(Role::findOrFail('firm'));
 
-		$this->job = Job::create([
+		$this->job_to_delete = Job::create([
 			'title' => 'My Super Job',
 			'firm_id' => $firm->getKey(),
 			'presentation' => 'Its presentation', 
@@ -48,20 +47,12 @@ class JobSkillAttachUnauthenticatedTest extends TestCase
 			'flexible_hours' => true, 
 			'working_hours_modulation_system' => true
 		]);
-
-		$this->skill = Skill::create([
-			'title' => 'Laravel'
-		]);
+		$this->job_to_delete->delete();
 	}
 
-    public function test_attach_job_skill_status()
+    public function test_restore_job_status()
     {
-        $response = $this->put(route('jobs.update', ['job' => $this->job['id']]), [
-			'skill' => [
-				'id' => $this->skill['id'],
-				'attach_or_detach' => true
-			]
-		]);
+		$response = $this->put(route('jobs_restore', ['job_id' => $this->job_to_delete['id']]));
         $response->assertStatus(401);
     }
 }

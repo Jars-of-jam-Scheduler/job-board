@@ -40,6 +40,6 @@ Route::apiResource('jobs', JobController::class);  // Routes are Sanctumed in th
 
 Route::middleware('auth:sanctum')->group(function() {
 	Route::apiResource('users', UserController::class)->only('update');
-	Route::put('/jobs/{job_id}/restore', [JobController::class, 'restore'])->whereUuid('job_id')->name('jobs_restore');
+	Route::put('/jobs/{job_id}/restore', [JobController::class, 'restore'])->whereNumber('job_id')->name('jobs_restore');
 	Route::post('/accept_or_refuse_job_application', [UserController::class, 'acceptOrRefuseJobApplication']);
 });

@@ -57,21 +57,23 @@ class JobSkillAttachTest extends TestCase
 
     public function test_attach_job_skill_status()
     {
-        $response = $this->post('/api/attach_job_skill', [
-			'job' => $this->job['id'], 
-			'skill' => $this->skill['id'], 
+		$response = $this->put(route('jobs.update', ['job' => $this->job['id']]), [
+			'skill' => [
+				'id' => $this->skill['id'],
+				'attach_or_detach' => true
+			]
 		]);
-
         $response->assertStatus(200);
     }
 
 	public function test_attach_job_skill_data()
     {
-		$response = $this->post('/api/attach_job_skill', [
-			'job' => $this->job['id'], 
-			'skill' => $this->skill['id'], 
+		$this->put(route('jobs.update', ['job' => $this->job['id']]), [
+			'skill' => [
+				'id' => $this->skill['id'],
+				'attach_or_detach' => true
+			]
 		]);
-
         $this->assertDatabaseHas('job_skill', [
 			'job_id' => $this->job['id'], 
 			'skill_id' => $this->skill['id'], 

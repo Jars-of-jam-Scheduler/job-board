@@ -16,7 +16,7 @@ class UserController extends Controller
 		Gate::authorize('update-user', $user);
 
 		if($request->has('job')) {
-			$this->attachOrDetachJob($request);
+			$this->attachOrDetachJob($request, $user);
 		}
 
 		$user->fill($request->validated());
@@ -24,9 +24,8 @@ class UserController extends Controller
 		return true;
 	}
     
-	public function attachOrDetachJob(Request $request)
+	public function attachOrDetachJob(Request $request, User $authenticated_user)
 	{
-		$authenticated_user = auth()->user();
 		if($request->input('job.attach_or_detach')) {
 			Gate::authorize('attach-job');
 
@@ -66,10 +65,8 @@ class UserController extends Controller
 
 		if($request->input('job_application.accept_or_refuse')) {
 			$job_application->user->notify(new AcceptedJobApplication($job_application));
-
 		} else {
 			$job_application->user->notify(new RefusedJobApplication($job_application));
-
 		}
 
 		return $new_job_application_accept_or_refuse;

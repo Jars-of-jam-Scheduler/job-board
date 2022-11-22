@@ -25,9 +25,7 @@ class UpdateJobRequest extends FormRequest
      */
     public function rules(Request $request)
     {
-		$rules = [];
-
-        $rules = array_merge($rules, [
+        return [
             'title' => 'nullable|string', 
 			'firm_id' => 'prohibited',
 			'presentation' => 'nullable|string', 
@@ -42,17 +40,9 @@ class UpdateJobRequest extends FormRequest
 			'flexible_hours' => 'nullable|boolean',
 			'working_hours_modulation_system' => 'nullable|boolean',
 
-			'skill' => 'nullable|array:id,job,attach_or_detach'
-        ]);
-
-		if($request->has('skill')) {
-			$rules = array_merge($rules, [
-				'skill.id' => 'required|integer|gt:0',
-				'skill.job' => 'required|integer|gt:0',
-				'skill.attach_or_detach' => 'required|boolean'
-			]);
-		}
-
-		return $rules;
+			'skill' => 'nullable|array:id,attach_or_detach|required_array_keys:id,attach_or_detach',
+			'skill.id' => 'integer|gt:0',
+			'skill.attach_or_detach' => 'boolean'
+		];
     }
 }
