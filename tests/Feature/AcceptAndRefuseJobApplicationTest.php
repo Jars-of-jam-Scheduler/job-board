@@ -60,10 +60,12 @@ class AcceptAndRefuseJobApplicationTest extends TestCase
 			'working_hours_modulation_system' => true
 		]);
 
-		$this->actingAs($this->applier, 'sanctum')->post('/api/attach_user_job', [
-			'user' => $this->applier['id'],
-			'job' => $this->job['id'],
-			'message' => 'The message the applicant writes, to be read by the firm he applies for.'
+		$this->actingAs($this->applier, 'sanctum')->put(route('users.update', ['user' => $this->applier['id']]), [
+			'job' => [
+				'id' => $this->job['id'],
+				'attach_or_detach' => true,
+				'message' => 'I want to apply for this job because foobar.'
+			]
 		]);
 
 		Sanctum::actingAs($firm);
@@ -77,13 +79,13 @@ class AcceptAndRefuseJobApplicationTest extends TestCase
 		])->firstOrFail();
 
         $this->post('/api/accept_or_refuse_job_application', [
-			'job_application' => $job_application['id'],
+			'job_application_id' => $job_application['id'],
 			'firm_message' => 'The message the firm writes, to be read by the job applier. Both in the cases that the firm has accepted or refused the job application.',
 			'accept_or_refuse' => true, 
 		]);
 
 		$response = $this->post('/api/accept_or_refuse_job_application', [
-			'job_application' => $job_application['id'],
+			'job_application_id' => $job_application['id'],
 			'firm_message' => 'The message the firm writes, to be read by the job applier. Both in the cases that the firm has accepted or refused the job application.',
 			'accept_or_refuse' => false, 
 		]);
@@ -99,13 +101,13 @@ class AcceptAndRefuseJobApplicationTest extends TestCase
 		])->firstOrFail();
 
 		$first_response = $this->post('/api/accept_or_refuse_job_application', [
-			'job_application' => $job_application['id'],
+			'job_application_id' => $job_application['id'],
 			'firm_message' => 'The message the firm writes, to be read by the job applier. Both in the cases that the firm has accepted or refused the job application.',
 			'accept_or_refuse' => true, 
 		]);
 
 		$last_response = $this->post('/api/accept_or_refuse_job_application', [
-			'job_application' => $job_application['id'],
+			'job_application_id' => $job_application['id'],
 			'firm_message' => 'The second message.',
 			'accept_or_refuse' => false, 
 		]);

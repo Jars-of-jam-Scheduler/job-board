@@ -144,11 +144,12 @@ class UserJobAttachTest extends TestCase
 				'message' => 'I want to apply for this job because foobar.'
 			]
 		]);
-		$job_application = auth()->user()->jobs()->where('job_id', $this->job['id'])->firstOrFail();
+
+		$job_application = auth()->user()->jobs()->where('job_id', $this->job['id'])->firstOrFail()->pivot;
 
 		Notification::assertSentTo(
             [$this->firm], function(NewJobApplication $notification, $channels) use ($job_application) {
-				return $notification->getJobApplication()->id === $job_application['id'];
+				return $notification->getJobApplication()->getKey() == $job_application->getKey();
 			}
         );
 	}

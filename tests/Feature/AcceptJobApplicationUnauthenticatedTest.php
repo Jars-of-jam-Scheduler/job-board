@@ -16,7 +16,7 @@ class AcceptJobApplicationUnauthenticated extends TestCase
     public function test_job_accept_status()
     {
         $response = $this->post('/api/accept_or_refuse_job_application', [
-			'job_application' => 1,
+			'job_application_id' => 1,
 			'firm_message' => 'The message the firm writes, to be read by the job applier. Both in the cases that the firm has accepted or refused the job application.',
 			'accept_or_refuse' => true, 
 		]);

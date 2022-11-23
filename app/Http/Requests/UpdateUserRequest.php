@@ -34,7 +34,7 @@ class UpdateUserRequest extends FormRequest
 			'job_application' => 'nullable|array:id,accept_or_refuse,firm_message|required_array_keys:id,accept_or_refuse',
 			'job_application.id' => 'integer|gt:0',
 			'job_application.accept_or_refuse' => 'boolean',
-			'job_application.firm_message' => 'required_if:job.accept_or_refuse,true|string',
+			'job_application.firm_message' => 'required_if:job_application.accept_or_refuse,true|string',
         ];
     }
 }

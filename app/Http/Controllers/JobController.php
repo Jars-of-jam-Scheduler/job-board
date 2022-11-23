@@ -113,7 +113,7 @@ class JobController extends Controller
 		return $job->restore();
 	}
 
-	public function attachOrDetachJobSkill(Request $request, Job $job)
+	private function attachOrDetachJobSkill(Request $request, Job $job)
 	{
 		if($request->input('skill.attach_or_detach')) {
 			$job->skills()->attach($request->input('skill.id'));
