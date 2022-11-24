@@ -37,9 +37,11 @@ Route::post('/sanctum/token', function(Request $request) {
 });
 
 Route::apiResource('jobs', JobController::class);  // Routes are Sanctumed in the controller
+Route::put('/jobs/{job_id}/restore', [JobController::class, 'restore'])->whereNumber('job_id')->name('jobs_restore');
 
-Route::middleware('auth:sanctum')->group(function() {
-	Route::apiResource('users', UserController::class)->only('update');
-	Route::put('/jobs/{job_id}/restore', [JobController::class, 'restore'])->whereNumber('job_id')->name('jobs_restore');
-	Route::post('/accept_or_refuse_job_application', [UserController::class, 'acceptOrRefuseJobApplication']);
+Route::middleware('auth:sanctum')->prefix('users')->group(function() {
+	Route::name('users.')->group(function() {
+		Route::put('/', [UserController::class, 'update'])->name('update');
+		Route::post('/accept_or_refuse_job_application', [UserController::class, 'acceptOrRefuseJobApplication'])->name('accept_or_refuse_job_application');
+	});
 });

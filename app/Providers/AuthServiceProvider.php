@@ -28,10 +28,6 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-		Gate::define('update-user', function(User $user, User $user_db) {
-			return $user_db->getKey() == $user->getKey();
-		});
-
 		$this->defineFirmGates();
 		$this->defineApplierGates();
     }
@@ -39,34 +35,34 @@ class AuthServiceProvider extends ServiceProvider
 	private function defineFirmGates() : void
 	{
 		Gate::define('store-job', function(User $user) {
-			return $user->hasRole('firm');
+			return $user->hasRole('firm') && !$user->hasRole('job_applier');
 		});
 
 		Gate::define('destroy-job', function(User $user, Job $job) {
-			return $user->hasRole('firm') && $job->firm_id == $user->getKey();
+			return $user->hasRole('firm') && !$user->hasRole('job_applier') && $job->firm_id == $user->getKey();
 		});
 
 		Gate::define('update-job-firm', function(User $user, Job $job) {
-			return $user->hasRole('firm') && $job->firm_id == $user->getKey();
+			return $user->hasRole('firm') && !$user->hasRole('job_applier') && $job->firm_id == $user->getKey();
 		});
 
 		Gate::define('restore-job-firm', function(User $user, Job $job) {
-			return $user->hasRole('firm') && $job->firm_id == $user->getKey();
+			return $user->hasRole('firm') && !$user->hasRole('job_applier') && $job->firm_id == $user->getKey();
 		});
 
 		Gate::define('accept-or-refuse-job-application', function(User $user, JobUser $job_application) {
-			return $user->hasRole('firm') && $job_application->job->firm_id == $user->getKey();
+			return $user->hasRole('firm') && !$user->hasRole('job_applier') && $job_application->job->firm_id == $user->getKey();
 		});
 	}
 
 	private function defineApplierGates() : void
 	{
 		Gate::define('attach-job', function(User $user) {
-			return $user->hasRole('job_applier');
+			return $user->hasRole('job_applier') && !$user->hasRole('firm');
 		});
 
 		Gate::define('detach-job', function(User $user, Job $job) {
-			return $user->hasRole('job_applier') && $job->users()->where('user_id', $user->getKey())->exists();
+			return $user->hasRole('job_applier') && !$user->hasRole('firm') && $job->users()->where('user_id', $user->getKey())->exists();
 		});
 	}
 }

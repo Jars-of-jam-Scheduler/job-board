@@ -31,7 +31,6 @@ class StoreJobRequest extends FormRequest
     {
         return [
             'title' => 'required|string', 
-			'firm_id' => 'required|integer',
 			'presentation' => 'required|string', 
 			'min_salary' => 'required|integer', 
 			'max_salary' => 'required|integer',

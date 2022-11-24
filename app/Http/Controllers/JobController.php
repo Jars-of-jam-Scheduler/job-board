@@ -46,9 +46,7 @@ class JobController extends Controller
     public function store(StoreJobRequest $request)
     {
 		Gate::authorize('store-job');
-
-		abort_if(!User::where('id', $request->firm_id)->exists(), 400, 'The firm was not found.');
-        return Job::create($request->validated());
+        return Job::create(['firm_id' => auth()->user()->id, ...$request->validated()]);
     }
 
     /**
@@ -88,7 +86,7 @@ class JobController extends Controller
 			$this->attachOrDetachJobSkill($request, $job);
 		}
 		
-		$job->fill($request->validated());
+		$job->fill(['firm_id' => auth()->user()->id, ...$request->validated()]);
 		$job->update();
 		return true;
     }
@@ -102,7 +100,6 @@ class JobController extends Controller
     public function destroy(Job $job)
     {
 		Gate::authorize('destroy-job', $job);
-
         return $job->delete();
     }
 

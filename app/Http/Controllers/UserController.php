@@ -10,21 +10,22 @@ use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
-	public function update(UpdateUserRequest $request, User $user)
+	public function update(UpdateUserRequest $request)
 	{
-		Gate::authorize('update-user', $user);
-
 		if($request->has('job')) {
-			$this->attachOrDetachJob($request, $user);
+			$this->attachOrDetachJob($request);
 		}
-
-		$user->fill($request->validated());
-		$user->update();
+		
+		$authenticated_user = auth()->user();
+		$authenticated_user->fill($request->validated());
+		$authenticated_user->update();
 		return true;
 	}
     
-	private function attachOrDetachJob(Request $request, User $authenticated_user)
+	private function attachOrDetachJob(Request $request)
 	{
+		$authenticated_user = auth()->user();
+
 		if($request->input('job.attach_or_detach')) {
 			Gate::authorize('attach-job');
 
