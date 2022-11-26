@@ -15,7 +15,7 @@ class UserJobAttachUnauthenticatedTest extends TestCase
 
 	public function test_attach_user_job_status()
     {
-		$response = $this->put(route('users.update', ['user' => 1]), [
+		$response = $this->put(route('appliers.update'), [
 			'job' => [
 				'id' => 1,
 				'attach_or_detach' => true,

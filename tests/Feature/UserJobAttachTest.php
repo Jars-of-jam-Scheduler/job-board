@@ -64,7 +64,7 @@ class UserJobAttachTest extends TestCase
 
     public function test_attach_user_job_status()
     {
-		$response = $this->put(route('users.update', ['user' => $this->applier['id']]), [
+		$response = $this->put(route('appliers.update'), [
 			'job' => [
 				'id' => $this->job['id'],
 				'attach_or_detach' => true,
@@ -77,7 +77,7 @@ class UserJobAttachTest extends TestCase
 
 	public function test_attach_user_job_data()
     {
-		$this->put(route('users.update', ['user' => $this->applier['id']]), [
+		$this->put(route('appliers.update'), [
 			'job' => [
 				'id' => $this->job['id'],
 				'attach_or_detach' => true,
@@ -94,7 +94,7 @@ class UserJobAttachTest extends TestCase
 
 	public function test_attach_user_job_once_status()
 	{
-		$this->put(route('users.update', ['user' => $this->applier['id']]), [
+		$this->put(route('appliers.update'), [
 			'job' => [
 				'id' => $this->job['id'],
 				'attach_or_detach' => true,
@@ -102,7 +102,7 @@ class UserJobAttachTest extends TestCase
 			]
 		]);
 
-		$response = $this->put(route('users.update', ['user' => $this->applier['id']]), [
+		$response = $this->put(route('appliers.update'), [
 			'job' => [
 				'id' => $this->job['id'],
 				'attach_or_detach' => true,
@@ -115,7 +115,7 @@ class UserJobAttachTest extends TestCase
 
 	public function test_attach_user_job_once_data()
 	{
-		$this->put(route('users.update', ['user' => $this->applier['id']]), [
+		$this->put(route('appliers.update'), [
 			'job' => [
 				'id' => $this->job['id'],
 				'attach_or_detach' => true,
@@ -123,7 +123,7 @@ class UserJobAttachTest extends TestCase
 			]
 		]);
 
-		$this->put(route('users.update', ['user' => $this->applier['id']]), [
+		$this->put(route('appliers.update'), [
 			'job' => [
 				'id' => $this->job['id'],
 				'attach_or_detach' => true,
@@ -137,7 +137,7 @@ class UserJobAttachTest extends TestCase
 
 	public function test_attach_user_job_notification_sent()
 	{
-		$this->put(route('users.update', ['user' => $this->applier['id']]), [
+		$this->put(route('appliers.update'), [
 			'job' => [
 				'id' => $this->job['id'],
 				'attach_or_detach' => true,

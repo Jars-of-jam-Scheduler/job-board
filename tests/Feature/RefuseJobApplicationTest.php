@@ -76,7 +76,7 @@ class RefuseJobApplication extends TestCase
 			['user_id', $this->applier['id']],
 		])->firstOrFail();
 		
-        $response = $this->post('/api/users/accept_or_refuse_job_application', [
+        $response = $this->post('/api/firms/accept_or_refuse_job_application', [
 			'job_application_id' => $job_application['id'],
 			'firm_message' => 'The message the firm writes, to be read by the job applier. Both in the cases that the firm has accepted or refused the job application.',
 			'accept_or_refuse' => false, 
@@ -91,7 +91,7 @@ class RefuseJobApplication extends TestCase
 			['user_id', $this->applier['id']],
 		])->firstOrFail();
 		
-        $response = $this->post('/api/users/accept_or_refuse_job_application', [
+        $response = $this->post('/api/firms/accept_or_refuse_job_application', [
 			'job_application_id' => $job_application['id'],
 			'firm_message' => 'The message the firm writes, to be read by the job applier. Both in the cases that the firm has accepted or refused the job application.',
 			'accept_or_refuse' => false, 
@@ -111,7 +111,7 @@ class RefuseJobApplication extends TestCase
 			['user_id', $this->applier['id']],
 		])->firstOrFail();
 		
-        $response = $this->post('/api/users/accept_or_refuse_job_application', [
+        $response = $this->post('/api/firms/accept_or_refuse_job_application', [
 			'job_application_id' => $job_application['id'],
 			'firm_message' => 'The message the firm writes, to be read by the job applier. Both in the cases that the firm has accepted or refused the job application.',
 			'accept_or_refuse' => false, 

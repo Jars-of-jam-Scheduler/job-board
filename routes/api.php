@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\User;
-use App\Http\Controllers\{JobController, UserController};
+use App\Http\Controllers\{JobController, ApplierController, FirmController};
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -39,9 +39,11 @@ Route::post('/sanctum/token', function(Request $request) {
 Route::apiResource('jobs', JobController::class);  // Routes are Sanctumed in the controller
 Route::put('/jobs/{job_id}/restore', [JobController::class, 'restore'])->whereNumber('job_id')->name('jobs_restore');
 
-Route::middleware('auth:sanctum')->prefix('users')->group(function() {
-	Route::name('users.')->group(function() {
-		Route::put('/', [UserController::class, 'update'])->name('update');
-		Route::post('/accept_or_refuse_job_application', [UserController::class, 'acceptOrRefuseJobApplication'])->name('accept_or_refuse_job_application');
-	});
+Route::middleware('auth:sanctum')->prefix('appliers')->name('appliers.')->group(function() {
+	Route::put('/', [ApplierController::class, 'update'])->name('update');
+});
+
+Route::middleware('auth:sanctum')->prefix('firms')->name('firms.')->group(function() {
+	Route::put('/', [FirmController::class, 'update'])->name('update');
+	Route::post('/accept_or_refuse_job_application', [FirmController::class, 'acceptOrRefuseJobApplication'])->name('accept_or_refuse_job_application');
 });
