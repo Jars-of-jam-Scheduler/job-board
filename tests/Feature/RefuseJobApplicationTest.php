@@ -60,12 +60,10 @@ class RefuseJobApplication extends TestCase
 			'working_hours_modulation_system' => true
 		]);
 
-		$this->actingAs($this->applier, 'sanctum')->put(route('users.update', ['user' => $this->applier['id']]), [
-			'job' => [
-				'id' => $this->job['id'],
-				'attach_or_detach' => true,
-				'message' => 'I want to apply for this job because foobar.'
-			]
+		JobUser::create([
+			'job_id' => $this->job['id'],
+			'user_id' => $this->applier['id'],
+			'message' => 'I want to apply for this job because foobar.'
 		]);
 
 		Sanctum::actingAs($firm);

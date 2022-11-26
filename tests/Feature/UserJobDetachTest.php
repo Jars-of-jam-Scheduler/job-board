@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\{User, Job, Role};
+use App\Models\{User, Job, Role, JobUser};
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -56,18 +56,16 @@ class UserJobDetachTest extends TestCase
 			'flexible_hours' => true, 
 			'working_hours_modulation_system' => true
 		]);
+
+		JobUser::create([
+			'job_id' => $this->job['id'],
+			'user_id' => $this->applier['id'],
+			'message' => 'I want to apply for this job because foobar.'
+		]);
 	}
 
     public function test_detach_user_job_status()
     {
-		$this->put(route('users.update', ['user' => $this->applier['id']]), [
-			'job' => [
-				'id' => $this->job['id'],
-				'attach_or_detach' => true,
-				'message' => 'I want to apply for this job because foobar.'
-			]
-		]);
-		
 		$response = $this->put(route('users.update', ['user' => $this->applier['id']]), [
 			'job' => [
 				'id' => $this->job['id'],
@@ -79,14 +77,6 @@ class UserJobDetachTest extends TestCase
 
 	public function test_detach_user_job_data()
     {
-		$this->put(route('users.update', ['user' => $this->applier['id']]), [
-			'job' => [
-				'id' => $this->job['id'],
-				'attach_or_detach' => true,
-				'message' => 'I want to apply for this job because foobar.'
-			]
-		]);
-
 		$this->put(route('users.update', ['user' => $this->applier['id']]), [
 			'job' => [
 				 'id' => $this->job['id'],

@@ -53,16 +53,12 @@ class JobSkillDetachTest extends TestCase
 		$this->skill = Skill::create([
 			'title' => 'Laravel'
 		]);
+
+		$this->job->skills()->attach($this->skill);
 	}
 
     public function test_detach_job_skill_status()
     {
-		$this->put(route('jobs.update', ['job' => $this->job['id']]), [
-			'skill' => [
-				'id' => $this->skill['id'],
-				'attach_or_detach' => true
-			]
-		]);
 		$response = $this->put(route('jobs.update', ['job' => $this->job['id']]), [
 			'skill' => [
 				'id' => $this->skill['id'],
@@ -74,12 +70,6 @@ class JobSkillDetachTest extends TestCase
 
 	public function test_detach_job_skill_data()
     {
-		$this->put(route('jobs.update', ['job' => $this->job['id']]), [
-			'skill' => [
-				'id' => $this->skill['id'],
-				'attach_or_detach' => true
-			]
-		]);
 		$this->put(route('jobs.update', ['job' => $this->job['id']]), [
 			'skill' => [
 				'id' => $this->skill['id'],

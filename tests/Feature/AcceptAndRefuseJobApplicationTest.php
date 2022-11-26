@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\{User, Job, Role, JobUser};
+use App\Models\{User, Job, Role, JobUser, AcceptedRefusedJobsApplicationsHistory};
 use App\Notifications\AcceptedJobApplication;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -60,12 +60,10 @@ class AcceptAndRefuseJobApplicationTest extends TestCase
 			'working_hours_modulation_system' => true
 		]);
 
-		$this->actingAs($this->applier, 'sanctum')->put(route('users.update', ['user' => $this->applier['id']]), [
-			'job' => [
-				'id' => $this->job['id'],
-				'attach_or_detach' => true,
-				'message' => 'I want to apply for this job because foobar.'
-			]
+		JobUser::create([
+			'job_id' => $this->job['id'],
+			'user_id' => $this->applier['id'],
+			'message' => 'I want to apply for this job because foobar.'
 		]);
 
 		Sanctum::actingAs($firm);
@@ -78,12 +76,12 @@ class AcceptAndRefuseJobApplicationTest extends TestCase
 			['user_id', $this->applier['id']],
 		])->firstOrFail();
 
-        $this->post('/api/users/accept_or_refuse_job_application', [
+		$this->post('/api/users/accept_or_refuse_job_application', [
 			'job_application_id' => $job_application['id'],
 			'firm_message' => 'The message the firm writes, to be read by the job applier. Both in the cases that the firm has accepted or refused the job application.',
 			'accept_or_refuse' => true, 
 		]);
-
+		
 		$response = $this->post('/api/users/accept_or_refuse_job_application', [
 			'job_application_id' => $job_application['id'],
 			'firm_message' => 'The message the firm writes, to be read by the job applier. Both in the cases that the firm has accepted or refused the job application.',

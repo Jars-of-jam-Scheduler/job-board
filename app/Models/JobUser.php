@@ -10,6 +10,12 @@ class JobUser extends Pivot
 {
 	use HasFactory;
 
+	protected $fillable = [
+		'job_id',
+		'user_id',
+		'message'
+	];
+
 	public $incrementing = true;
 
 	public function acceptedOrRefusedJobApplications()
