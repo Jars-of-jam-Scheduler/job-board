@@ -76,18 +76,19 @@ class AcceptAndRefuseJobApplicationTest extends TestCase
 			['user_id', $this->applier['id']],
 		])->firstOrFail();
 
-		$this->post('/api/firms/accept_or_refuse_job_application', [
-			'job_application_id' => $job_application['id'],
+		$this->post(route('firms.accept_or_refuse_job_application', [
+			'job_application' => $job_application['id'],
+		]), [
 			'firm_message' => 'The message the firm writes, to be read by the job applier. Both in the cases that the firm has accepted or refused the job application.',
 			'accept_or_refuse' => true, 
 		]);
 		
-		$response = $this->post('/api/firms/accept_or_refuse_job_application', [
-			'job_application_id' => $job_application['id'],
+		$response = $this->post(route('firms.accept_or_refuse_job_application', [
+			'job_application' => $job_application['id'],
+		]), [
 			'firm_message' => 'The message the firm writes, to be read by the job applier. Both in the cases that the firm has accepted or refused the job application.',
 			'accept_or_refuse' => false, 
 		]);
-
         $response->assertStatus(201);
     }
 
@@ -98,14 +99,16 @@ class AcceptAndRefuseJobApplicationTest extends TestCase
 			['user_id', $this->applier['id']],
 		])->firstOrFail();
 
-		$first_response = $this->post('/api/firms/accept_or_refuse_job_application', [
-			'job_application_id' => $job_application['id'],
+		$first_response = $this->post(route('firms.accept_or_refuse_job_application', [
+			'job_application' => $job_application['id'],
+		]), [
 			'firm_message' => 'The message the firm writes, to be read by the job applier. Both in the cases that the firm has accepted or refused the job application.',
 			'accept_or_refuse' => true, 
 		]);
 
-		$last_response = $this->post('/api/firms/accept_or_refuse_job_application', [
-			'job_application_id' => $job_application['id'],
+		$last_response = $this->post(route('firms.accept_or_refuse_job_application', [
+			'job_application' => $job_application['id'],
+		]), [
 			'firm_message' => 'The second message.',
 			'accept_or_refuse' => false, 
 		]);

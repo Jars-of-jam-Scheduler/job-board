@@ -66,23 +66,17 @@ class UserJobDetachTest extends TestCase
 
     public function test_detach_user_job_status()
     {
-		$response = $this->put(route('appliers.update'), [
-			'job' => [
-				'id' => $this->job['id'],
-				'attach_or_detach' => false,
-			]
-		]);
+		$response = $this->put(route('appliers.detach_job', [
+			'job' => $this->job['id'],
+		]));
         $response->assertStatus(200);
     }
 
 	public function test_detach_user_job_data()
     {
-		$this->put(route('appliers.update'), [
-			'job' => [
-				 'id' => $this->job['id'],
-				 'attach_or_detach' => false
-			]
-		]);
+		$this->put(route('appliers.detach_job', [
+			'job' => $this->job['id'],
+		]));
 
         $this->assertDatabaseMissing('job_user', [
 			'user_id' => $this->applier['id'],

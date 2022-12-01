@@ -18,26 +18,6 @@ class JobController extends Controller
 	}
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \App\Http\Requests\StoreJobRequest  $request
@@ -45,30 +25,7 @@ class JobController extends Controller
      */
     public function store(StoreJobRequest $request)
     {
-		Gate::authorize('store-job');
         return Job::create(['firm_id' => auth()->user()->id, ...$request->validated()]);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Job  $job
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Job $job)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Job  $job
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Job $job)
-    {
-        //
     }
 
     /**
@@ -80,8 +37,6 @@ class JobController extends Controller
      */
     public function update(UpdateJobRequest $request, Job $job)
     {
-		Gate::authorize('update-job-firm', $job);
-
 		if($request->has('skill')) {
 			$this->attachOrDetachJobSkill($request, $job);
 		}

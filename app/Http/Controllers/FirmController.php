@@ -4,23 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\{Job, User, JobUser, AcceptedRefusedJobsApplicationsHistory};
 use App\Notifications\{NewJobApplication, AcceptedJobApplication, RefusedJobApplication};
-use App\Http\Requests\{AcceptOrRefuseJobApplicationUserRequest, UpdateUserRequest};
+use App\Http\Requests\{AcceptOrRefuseJobApplicationUserRequest, UpdateFirmRequest};
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
-
-class FirmController extends UserController
+class FirmController extends Controller
 {
-	public function acceptOrRefuseJobApplication(AcceptOrRefuseJobApplicationUserRequest $request) : AcceptedRefusedJobsApplicationsHistory
+	public function update(UpdateFirmRequest $request)
 	{
-		$job_application = JobUser::findOrFail($request->job_application_id);
+		$authenticated_user = auth()->user();
+		$authenticated_user->fill($request->validated());
+		$authenticated_user->update();
+		return true;
+	}
 
-		Gate::authorize('accept-or-refuse-job-application', $job_application);
-
+	public function acceptOrRefuseJobApplication(AcceptOrRefuseJobApplicationUserRequest $request, JobUser $job_application) : AcceptedRefusedJobsApplicationsHistory
+	{
 		$ret = AcceptedRefusedJobsApplicationsHistory::create([
 			'accepted_or_refused' => $request->accept_or_refuse, 
 			'firm_message' => $request->firm_message,
-			'job_application_id' => $request->job_application_id
+			'job_application_id' => $job_application->getKey()
 		]);
 
 		if($request->accept_or_refuse) {

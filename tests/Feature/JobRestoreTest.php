@@ -53,13 +53,13 @@ class JobRestoreTest extends TestCase
 
     public function test_restore_job_status()
     {
-		$response = $this->put(route('jobs_restore', ['job_id' => $this->job_to_delete['id']]));
+		$response = $this->put(route('jobs_restore', ['job' => $this->job_to_delete['id']]));
         $response->assertStatus(200);
     }
 
 	public function test_restore_job_restoration_data() : void
     {
-        $response = $this->put(route('jobs_restore', ['job_id' => $this->job_to_delete['id']]));
+        $response = $this->put(route('jobs_restore', ['job' => $this->job_to_delete['id']]));
 		$this->assertNotSoftDeleted($this->job_to_delete);
     }
 }

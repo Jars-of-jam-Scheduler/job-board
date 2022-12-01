@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests;
 
-use App\Models\JobUser;
+use App\Models\Job;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AcceptOrRefuseJobApplicationUserRequest extends FormRequest
+class DetachJobApplierRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,7 +15,7 @@ class AcceptOrRefuseJobApplicationUserRequest extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->can('accept-or-refuse-job-application', $this->route()->parameter('job_application'));
+		return $this->user()->can('detach-job', $this->route()->parameter('job'));
     }
 
     /**
@@ -26,8 +26,7 @@ class AcceptOrRefuseJobApplicationUserRequest extends FormRequest
     public function rules()
     {
 		return [
-			'accept_or_refuse' => 'required|boolean',
-			'firm_message' => 'required|string',
-        ];
+			'job' => 'integer|gt:0',
+		];
     }
 }

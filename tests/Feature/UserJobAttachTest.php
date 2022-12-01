@@ -64,25 +64,22 @@ class UserJobAttachTest extends TestCase
 
     public function test_attach_user_job_status()
     {
-		$response = $this->put(route('appliers.update'), [
-			'job' => [
-				'id' => $this->job['id'],
-				'attach_or_detach' => true,
-				'message' => 'I want to apply for this job because foobar.'
-			]
+		$response = $this->put(route('appliers.attach_job', [
+			'job' => $this->job['id'],
+		]),
+		[
+			'message' => 'I want to apply for this job because foobar.'
 		]);
-
         $response->assertStatus(200);
     }
 
 	public function test_attach_user_job_data()
     {
-		$this->put(route('appliers.update'), [
-			'job' => [
-				'id' => $this->job['id'],
-				'attach_or_detach' => true,
-				'message' => 'I want to apply for this job because foobar.'
-			]
+		$this->put(route('appliers.attach_job', [
+			'job' => $this->job['id'],
+		]), 
+		[
+			'message' => 'I want to apply for this job because foobar.'
 		]);
 
         $this->assertDatabaseHas('job_user', [
@@ -94,20 +91,17 @@ class UserJobAttachTest extends TestCase
 
 	public function test_attach_user_job_once_status()
 	{
-		$this->put(route('appliers.update'), [
-			'job' => [
-				'id' => $this->job['id'],
-				'attach_or_detach' => true,
-				'message' => 'I want to apply for this job because foobar.'
-			]
+		$this->put(route('appliers.attach_job', [
+			'job' => $this->job['id'],
+		]),
+		[
+			'message' => 'I want to apply for this job because foobar.'
 		]);
 
-		$response = $this->put(route('appliers.update'), [
-			'job' => [
-				'id' => $this->job['id'],
-				'attach_or_detach' => true,
-				'message' => 'I want to apply for this job because foobar.'
-			]
+		$response = $this->put(route('appliers.attach_job', [
+			'job' => $this->job['id'],
+		]), [
+			'message' => 'I want to apply for this job because foobar.'
 		]);
 
 		$response->assertStatus(400);
@@ -115,20 +109,18 @@ class UserJobAttachTest extends TestCase
 
 	public function test_attach_user_job_once_data()
 	{
-		$this->put(route('appliers.update'), [
-			'job' => [
-				'id' => $this->job['id'],
-				'attach_or_detach' => true,
-				'message' => 'I want to apply for this job because foobar.'
-			]
+		$this->put(route('appliers.attach_job', [
+			'job' => $this->job['id'],
+		]), 
+		[
+			'message' => 'I want to apply for this job because foobar.'
 		]);
 
-		$this->put(route('appliers.update'), [
-			'job' => [
-				'id' => $this->job['id'],
-				'attach_or_detach' => true,
-				'message' => 'I want to apply for this job because foobar.'
-			]
+		$this->put(route('appliers.attach_job', [
+			'job' => $this->job['id'],
+		]),
+		[
+			'message' => 'I want to apply for this job because foobar.'
 		]);
 
 		$inserted_jobs_counter = auth()->user()->jobs()->where('job_id', $this->job['id'])->count();
@@ -137,12 +129,11 @@ class UserJobAttachTest extends TestCase
 
 	public function test_attach_user_job_notification_sent()
 	{
-		$this->put(route('appliers.update'), [
-			'job' => [
-				'id' => $this->job['id'],
-				'attach_or_detach' => true,
-				'message' => 'I want to apply for this job because foobar.'
-			]
+		$this->put(route('appliers.attach_job', [
+			'job' => $this->job['id'],
+		]),
+		[
+			'message' => 'I want to apply for this job because foobar.'
 		]);
 
 		$job_application = auth()->user()->jobs()->where('job_id', $this->job['id'])->firstOrFail()->pivot;

@@ -15,12 +15,9 @@ class UserJobDetachUnauthenticatedTest extends TestCase
 
     public function test_detach_user_job_status()
     {
-		$response = $this->put(route('appliers.update'), [
-			'job' => [
-				'id' => 1,
-				'attach_or_detach' => false,
-			]
-		]);
+		$response = $this->put(route('appliers.detach_job', [
+			'job' => 1,
+		]));
         $response->assertStatus(401);
     }
 

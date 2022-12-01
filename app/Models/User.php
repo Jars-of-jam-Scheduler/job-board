@@ -52,9 +52,9 @@ class User extends Authenticatable
 		return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_title');
 	}
 
-	public function hasAppliedFor(int $job_id) : bool
+	public function hasAppliedFor(Job $job) : bool
 	{
-		return $this->jobs()->where('job_id', $job_id)->exists();
+		return $this->jobs()->where('job_id', $job->getKey())->exists();
 	}
 
 	public function hasRole(string $role_title) : bool

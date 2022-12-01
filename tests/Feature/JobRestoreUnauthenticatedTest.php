@@ -15,7 +15,7 @@ class JobRestoreUnauthenticatedTest extends TestCase
 
     public function test_restore_job_status()
     {
-		$response = $this->put(route('jobs_restore', ['job_id' => 1]));
+		$response = $this->put(route('jobs_restore', ['job' => 1]));
         $response->assertStatus(401);
     }
 }
