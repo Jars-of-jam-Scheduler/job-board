@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\{Job, User, Role};
+use App\Models\{User, Role};
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -10,11 +10,11 @@ use Tests\TestCase;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\Sanctum;
 
-class JobDeleteTest extends TestCase
+class JobStoreBadUserTest extends TestCase
 {
     use RefreshDatabase;
 
-	private Job $job_to_delete;
+	private array $job;
 
 	public function setUp() : void
 	{
@@ -33,11 +33,17 @@ class JobDeleteTest extends TestCase
 			'password' => 'azerty', 
 		]);
 		$firm->roles()->save(Role::findOrFail('firm'));
-		Sanctum::actingAs($firm);
 
-		$this->job_to_delete = Job::create([
+		$applier = User::create([
+			'name' => 'The Applier',
+			'email' => 'test@thegummybears2.test', 
+			'password' => 'azerty', 
+		]);
+		$applier->roles()->save(Role::findOrFail('job_applier'));
+		Sanctum::actingAs($applier);
+
+		$this->job = [
 			'title' => 'My Super Job',
-			'firm_id' => $firm->getKey(),
 			'presentation' => 'Its presentation', 
 			'min_salary' => 45000, 
 			'max_salary' => 45000, 
@@ -48,19 +54,12 @@ class JobDeleteTest extends TestCase
 			'collective_agreement' => 'syntec', 
 			'flexible_hours' => true, 
 			'working_hours_modulation_system' => true
-		]);
+		];
 	}
 
-    public function test_delete_job_status() : void
+    public function test_store_job_status() : void
     {
-        $response = $this->delete(route('jobs.destroy', ['job' => $this->job_to_delete['id']]));
-        $response->assertStatus(200);
+        $response = $this->post(route('jobs.store'), $this->job);
+        $response->assertStatus(403);
     }
-
-	public function test_delete_job_deletion_data() : void
-    {
-        $response = $this->delete(route('jobs.destroy', ['job' => $this->job_to_delete['id']]));
-		$this->assertSoftDeleted($this->job_to_delete);
-    }
-
 }

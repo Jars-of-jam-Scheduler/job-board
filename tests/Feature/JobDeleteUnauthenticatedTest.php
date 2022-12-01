@@ -16,7 +16,7 @@ class JobDeleteUnauthenticatedTest extends TestCase
 
 	public function test_delete_job_status() : void
     {
-        $response = $this->put(route('jobs.destroy', ['job' => 1]));
+        $response = $this->delete(route('jobs.destroy', ['job' => 1]));
         $response->assertStatus(401);
     }
 }

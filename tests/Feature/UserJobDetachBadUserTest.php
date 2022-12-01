@@ -2,19 +2,19 @@
 
 namespace Tests\Feature;
 
-use App\Models\{Job, User, Role};
+use App\Models\{User, Job, Role, JobUser};
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
-use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\Sanctum;
 
-class JobDeleteTest extends TestCase
+class UserJobDetachBadUserTest extends TestCase
 {
-    use RefreshDatabase;
+	use RefreshDatabase;
 
-	private Job $job_to_delete;
+	private User $applier;
+	private Job $job;
 
 	public function setUp() : void
 	{
@@ -27,15 +27,22 @@ class JobDeleteTest extends TestCase
 			'title' => 'job_applier'
 		]);
 
+		$this->applier = User::create([
+			'name' => 'Test User',
+			'email' => 'testapplier@thegummybears.test', 
+			'password' => 'azerty', 
+		]);
+		$this->applier->roles()->save(Role::findOrFail('job_applier'));
+
 		$firm = User::create([
-			'name' => 'The Firm',
-			'email' => 'test@thegummybears.test', 
+			'name' => 'Test User',
+			'email' => 'testfirm@thegummybears.test', 
 			'password' => 'azerty', 
 		]);
 		$firm->roles()->save(Role::findOrFail('firm'));
 		Sanctum::actingAs($firm);
 
-		$this->job_to_delete = Job::create([
+		$this->job = Job::create([
 			'title' => 'My Super Job',
 			'firm_id' => $firm->getKey(),
 			'presentation' => 'Its presentation', 
@@ -49,18 +56,19 @@ class JobDeleteTest extends TestCase
 			'flexible_hours' => true, 
 			'working_hours_modulation_system' => true
 		]);
+
+		JobUser::create([
+			'job_id' => $this->job['id'],
+			'user_id' => $this->applier['id'],
+			'message' => 'I want to apply for this job because foobar.'
+		]);
 	}
 
-    public function test_delete_job_status() : void
+    public function test_detach_user_job_status()
     {
-        $response = $this->delete(route('jobs.destroy', ['job' => $this->job_to_delete['id']]));
-        $response->assertStatus(200);
+		$response = $this->put(route('appliers.detach_job', [
+			'job' => $this->job['id'],
+		]));
+        $response->assertStatus(403);
     }
-
-	public function test_delete_job_deletion_data() : void
-    {
-        $response = $this->delete(route('jobs.destroy', ['job' => $this->job_to_delete['id']]));
-		$this->assertSoftDeleted($this->job_to_delete);
-    }
-
 }

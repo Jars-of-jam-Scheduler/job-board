@@ -2,19 +2,19 @@
 
 namespace Tests\Feature;
 
-use App\Models\{Job, User, Role};
+use App\Models\{Job, Skill, User, Role};
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
-use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\Sanctum;
 
-class JobDeleteTest extends TestCase
+class JobSkillAttachBadUserTest extends TestCase
 {
     use RefreshDatabase;
 
-	private Job $job_to_delete;
+	private Job $job;
+	private Skill $skill;
 
 	public function setUp() : void
 	{
@@ -33,9 +33,16 @@ class JobDeleteTest extends TestCase
 			'password' => 'azerty', 
 		]);
 		$firm->roles()->save(Role::findOrFail('firm'));
-		Sanctum::actingAs($firm);
 
-		$this->job_to_delete = Job::create([
+		$applier = User::create([
+			'name' => 'The Applier',
+			'email' => 'test@thegummybears2.test', 
+			'password' => 'azerty', 
+		]);
+		$applier->roles()->save(Role::findOrFail('job_applier'));
+		Sanctum::actingAs($applier);
+
+		$this->job = Job::create([
 			'title' => 'My Super Job',
 			'firm_id' => $firm->getKey(),
 			'presentation' => 'Its presentation', 
@@ -49,18 +56,20 @@ class JobDeleteTest extends TestCase
 			'flexible_hours' => true, 
 			'working_hours_modulation_system' => true
 		]);
+
+		$this->skill = Skill::create([
+			'title' => 'Laravel'
+		]);
 	}
 
-    public function test_delete_job_status() : void
+    public function test_attach_job_skill_status()
     {
-        $response = $this->delete(route('jobs.destroy', ['job' => $this->job_to_delete['id']]));
-        $response->assertStatus(200);
+		$response = $this->put(route('jobs.update', ['job' => $this->job['id']]), [
+			'skill' => [
+				'id' => $this->skill['id'],
+				'attach_or_detach' => true
+			]
+		]);
+        $response->assertStatus(403);
     }
-
-	public function test_delete_job_deletion_data() : void
-    {
-        $response = $this->delete(route('jobs.destroy', ['job' => $this->job_to_delete['id']]));
-		$this->assertSoftDeleted($this->job_to_delete);
-    }
-
 }
