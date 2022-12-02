@@ -26,7 +26,6 @@ class AttachJobApplierRequest extends FormRequest
     public function rules()
     {
 		return [
-			'job' => 'integer|gt:0',
 			'message' => 'string',
 		];
     }

@@ -17,16 +17,4 @@ class DetachJobApplierRequest extends FormRequest
     {
 		return $this->user()->can('detach-job', $this->route()->parameter('job'));
     }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, mixed>
-     */
-    public function rules()
-    {
-		return [
-			'job' => 'integer|gt:0',
-		];
-    }
 }
