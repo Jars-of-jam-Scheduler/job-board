@@ -15,6 +15,7 @@ class JobSkillDetachTest extends TestCase
 
 	private Job $job;
 	private Skill $skill;
+	private User $firm;
 
 	public function setUp() : void
 	{
@@ -27,17 +28,17 @@ class JobSkillDetachTest extends TestCase
 			'title' => 'job_applier'
 		]);
 		
-		$firm = User::create([
+		$this->firm = User::create([
 			'name' => 'The Firm',
 			'email' => 'test@thegummybears.test', 
 			'password' => 'azerty', 
 		]);
-		$firm->roles()->save(Role::findOrFail('firm'));
-		Sanctum::actingAs($firm);
+		$this->firm->roles()->save(Role::findOrFail('firm'));
+		Sanctum::actingAs($this->firm);
 
 		$this->job = Job::create([
 			'title' => 'My Super Job',
-			'firm_id' => $firm->getKey(),
+			'firm_id' => $this->firm->getKey(),
 			'presentation' => 'Its presentation', 
 			'min_salary' => 45000, 
 			'max_salary' => 45000, 
@@ -81,4 +82,69 @@ class JobSkillDetachTest extends TestCase
 			'skill_id' => $this->skill['id'], 
 		]);
     }
+
+	/**
+     * @dataProvider badDataProvider
+     */
+	public function test_bad_data(
+		$job_id,
+		$skill, 
+		$expected_result
+	)
+	{
+		$data_to_send = [
+			'skill' => [
+				'id' => $skill['id'],
+				'attach_or_detach' => $skill['attach_or_detach']
+			]
+		];
+
+		if(isset($job_id)) {
+			$data_to_send['id'] = $job_id;
+		}
+
+        $response = $this->put(route('jobs.update', ['job' => $this->job['id']]), $data_to_send);
+
+		if(isset($job_id)) {
+			$this->assertDatabaseHas('firms_jobs', [
+				'id' => $this->job['id'],
+				'title' => 'My Super Job',
+				'firm_id' => $this->firm->getKey(),
+				'presentation' => 'Its presentation', 
+				'min_salary' => 45000, 
+				'max_salary' => 45000, 
+				'working_place' => 'full_remote', 
+				'working_place_country' => 'fr',
+				'employment_contract_type' => 'cdi', 
+				'contractual_working_time' => '39',
+				'collective_agreement' => 'syntec', 
+				'flexible_hours' => true, 
+				'working_hours_modulation_system' => true
+			]);
+		} else {
+			$response->assertSessionHasErrors($expected_result);
+		}
+	}
+
+	public function badDataProvider() : array
+	{
+		return [
+			[
+				'job_id' => 1,
+				'skill' => [
+					'id' => 1,
+					'attach_or_detach' => false,
+				],
+				'expected_result' => []
+			],
+			[
+				'job_id' => null,
+				'skill' => [
+					'id' => 1,
+					'attach_or_detach' => 2,
+				],
+				'expected_result' => ['skill.attach_or_detach']
+			]
+		];
+	}
 }

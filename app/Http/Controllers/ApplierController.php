@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\{Job, User, JobUser, AcceptedRefusedJobsApplicationsHistory};
 use App\Notifications\{NewJobApplication, AcceptedJobApplication, RefusedJobApplication};
-use App\Http\Requests\{AttachJobApplierRequest, DetachJobApplierRequest, UpdateApplierRequest};
+use App\Http\Requests\{AttachJobApplierRequest, UpdateApplierRequest};
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -40,8 +40,9 @@ class ApplierController extends Controller
 		$job->firm->notify(new NewJobApplication($job_application));
 	}
 
-	public function detachJob(DetachJobApplierRequest $request, Job $job)
+	public function detachJob(Job $job)
 	{
+		Gate::authorize('detach-job', $job);
 		auth()->user()->jobs()->detach($job);
 	}
 }

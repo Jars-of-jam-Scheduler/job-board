@@ -83,5 +83,4 @@ class UserJobDetachTest extends TestCase
 			'job_id' => $this->job['id']
 		]);
     }
-
 }

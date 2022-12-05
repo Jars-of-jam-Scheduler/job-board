@@ -17,6 +17,7 @@ class RefuseJobApplication extends TestCase
 
 	private User $applier;
 	private Job $job;
+	private JobUser $job_application;
 
 	public function setUp() : void
 	{
@@ -60,7 +61,7 @@ class RefuseJobApplication extends TestCase
 			'working_hours_modulation_system' => true
 		]);
 
-		JobUser::create([
+		$this->job_application = JobUser::create([
 			'job_id' => $this->job['id'],
 			'user_id' => $this->applier['id'],
 			'message' => 'I want to apply for this job because foobar.'
@@ -71,13 +72,8 @@ class RefuseJobApplication extends TestCase
 
 	public function test_job_refuse_status()
     {
-		$job_application = JobUser::where([
-			['job_id', $this->job['id']],
-			['user_id', $this->applier['id']],
-		])->firstOrFail();
-		
         $response = $this->post(route('firms.accept_or_refuse_job_application', [
-			'job_application' => $job_application['id'],
+			'job_application' => $this->job_application['id'],
 		]), [
 			'firm_message' => 'The message the firm writes, to be read by the job applier. Both in the cases that the firm has accepted or refused the job application.',
 			'accept_or_refuse' => false, 
@@ -87,43 +83,57 @@ class RefuseJobApplication extends TestCase
 
 	public function test_job_refuse_data()
 	{
-		$job_application = JobUser::where([
-			['job_id', $this->job['id']],
-			['user_id', $this->applier['id']],
-		])->firstOrFail();
-		
         $response = $this->post(route('firms.accept_or_refuse_job_application', [
-			'job_application' => $job_application['id'],
+			'job_application' => $this->job_application['id'],
 		]), [
 			'firm_message' => 'The message the firm writes, to be read by the job applier. Both in the cases that the firm has accepted or refused the job application.',
 			'accept_or_refuse' => false, 
 		]);
         $this->assertDatabaseHas('jobs_apps_approvals', [
 			'id' => $response->json('id'), 
-			'job_application_id' => $job_application['id'],
+			'job_application_id' => $this->job_application['id'],
 			'firm_message' => 'The message the firm writes, to be read by the job applier. Both in the cases that the firm has accepted or refused the job application.',
 			'accepted_or_refused' => false,
 		]);
 	}
 
 	public function test_job_accept_notification_sent()
-	{
-		$job_application = JobUser::where([
-			['job_id', $this->job['id']],
-			['user_id', $this->applier['id']],
-		])->firstOrFail();
-		
+	{	
         $response = $this->post(route('firms.accept_or_refuse_job_application', [
-			'job_application' => $job_application['id'],
+			'job_application' => $this->job_application['id'],
 		]), [
 			'firm_message' => 'The message the firm writes, to be read by the job applier. Both in the cases that the firm has accepted or refused the job application.',
 			'accept_or_refuse' => false, 
 		]);
 
 		Notification::assertSentTo(
-            [$this->applier], function(RefusedJobApplication $notification, $channels) use ($job_application) {
-				return $notification->getJobApplication()->id === $job_application->id;
+            [$this->applier], function(RefusedJobApplication $notification, $channels) {
+				return $notification->getJobApplication()->id === $this->job_application->id;
 			}
         );
+	}
+
+	/**
+     * @dataProvider badDataProvider
+     */
+	public function test_bad_data($message, $accept_or_refuse)
+	{
+		$response = $this->post(route('firms.accept_or_refuse_job_application', [
+			'job_application' => $this->job_application['id'],
+		]), [
+			'firm_message' => $message,
+			'accept_or_refuse' => $accept_or_refuse, 
+		]);
+
+        $response->assertSessionHasErrors(['firm_message', 'accept_or_refuse']);
+	}
+
+	public function badDataProvider() : array
+	{
+		return [
+			[null, null], 
+			[12, 12],
+			[12, 'test'],
+		];
 	}
 }

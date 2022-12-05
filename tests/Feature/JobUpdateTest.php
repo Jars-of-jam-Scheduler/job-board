@@ -98,4 +98,97 @@ class JobUpdateTest extends TestCase
         $this->assertDatabaseHas('firms_jobs', $this->job_to_update->toArray());
     }
 
+	/**
+     * @dataProvider badDataProvider
+     */
+	public function test_bad_data(
+		$id,
+		$title, 
+		$firm_id,
+		$presentation, 
+		$min_salary, 
+		$max_salary,
+		$working_place,
+		$working_place_country,
+		$employment_contract_type,
+		$contractual_working_time,
+		$collective_agreement,
+		$flexible_hours,
+		$working_hours_modulation_system,
+		$expected_result
+	)
+	{
+		$data_to_send = [
+			'title' => $title, 
+			'presentation' => $presentation, 
+			'min_salary' => $min_salary, 
+			'max_salary' => $max_salary,
+			'working_place' =>  $working_place,
+			'working_place_country' => $working_place_country,
+			'employment_contract_type' => $employment_contract_type,
+			'contractual_working_time' => $contractual_working_time,
+			'collective_agreement' => $collective_agreement,
+			'flexible_hours' => $flexible_hours,
+			'working_hours_modulation_system' => $working_hours_modulation_system,
+		];
+
+		if(isset($firm_id)) {
+			$data_to_send['firm_id'] = $firm_id;
+		} elseif(isset($id)) {
+			$data_to_send['id'] = $id;
+		}
+		
+		$response = $this->put(route('jobs.update', ['job' => $this->job_to_update['id']]), $data_to_send);
+
+		if(isset($id)) {
+			unset($data_to_send['id']);
+			$this->assertDatabaseMissing('firms_jobs', [
+				'id' => $id,
+				... $data_to_send
+			])->assertDatabaseHas('firms_jobs', [
+				'id' => $this->job_to_update['id'],
+				... $data_to_send
+			]);
+		} else {
+			$response->assertSessionHasErrors($expected_result);	
+		}
+	}
+
+	public function badDataProvider() : array
+	{
+		return [
+			[
+				'id' => null,
+				'title' => null,
+				'firm_id' => 5,
+				'presentation' => null,
+				'min_salary' => null,
+				'max_salary' => null,
+				'working_place' => null,
+				'working_place_country' => null,
+				'employment_contract_type' => null,
+				'contractual_working_time' => null,
+				'collective_agreement' => null,
+				'flexible_hours' => null,
+				'working_hours_modulation_system' => null,
+				'expected_result' => ['firm_id'],
+			],
+			[
+				'id' => 999,
+				'title' => null,
+				'firm_id' => null,
+				'presentation' => null,
+				'min_salary' => null,
+				'max_salary' => null,
+				'working_place' => null,
+				'working_place_country' => null,
+				'employment_contract_type' => null,
+				'contractual_working_time' => null,
+				'collective_agreement' => null,
+				'flexible_hours' => null,
+				'working_hours_modulation_system' => null,
+				'expected_result' => ['id'],
+			]
+		];
+	}
 }

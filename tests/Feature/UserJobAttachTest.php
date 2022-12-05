@@ -144,4 +144,27 @@ class UserJobAttachTest extends TestCase
 			}
         );
 	}
+
+	/**
+     * @dataProvider badDataProvider
+     */
+	public function test_bad_data($message)
+	{
+		$response = $this->put(route('appliers.attach_job', [
+			'job' => $this->job['id'],
+		]),
+		[
+			'message' => $message
+		]);
+
+        $response->assertSessionHasErrors(['message']);
+	}
+
+	public function badDataProvider() : array
+	{
+		return [
+			[null], 
+			[12],
+		];
+	}
 }

@@ -17,6 +17,7 @@ class RefuseJobApplicationBadUserTest extends TestCase
 
 	private User $applier;
 	private Job $job;
+	private $job_application;
 
 	public function setUp() : void
 	{
@@ -60,7 +61,7 @@ class RefuseJobApplicationBadUserTest extends TestCase
 			'working_hours_modulation_system' => true
 		]);
 
-		JobUser::create([
+		$this->job_application = JobUser::create([
 			'job_id' => $this->job['id'],
 			'user_id' => $this->applier['id'],
 			'message' => 'I want to apply for this job because foobar.'
@@ -71,13 +72,8 @@ class RefuseJobApplicationBadUserTest extends TestCase
 
 	public function test_job_refuse_status()
     {
-		$job_application = JobUser::where([
-			['job_id', $this->job['id']],
-			['user_id', $this->applier['id']],
-		])->firstOrFail();
-		
         $response = $this->post(route('firms.accept_or_refuse_job_application', [
-			'job_application' => $job_application['id'],
+			'job_application' => $this->job_application['id'],
 		]), [
 			'firm_message' => 'The message the firm writes, to be read by the job applier. Both in the cases that the firm has accepted or refused the job application.',
 			'accept_or_refuse' => false, 

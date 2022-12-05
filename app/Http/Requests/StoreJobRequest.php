@@ -38,7 +38,6 @@ class StoreJobRequest extends FormRequest
 			'working_place_country' => ['required', new Enum(WorkingPlaceCountry::class)],
 			'employment_contract_type' => ['required', new Enum(EmploymentContractType::class)],
 			'contractual_working_time' => 'required|string',
-			'contractual_working_time' => 'required|string',
 			'collective_agreement' => ['required', new Enum(CollectiveAgreement::class)],
 			'flexible_hours' => 'required|boolean',
 			'working_hours_modulation_system' => 'required|boolean'

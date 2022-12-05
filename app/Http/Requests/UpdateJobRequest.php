@@ -35,7 +35,6 @@ class UpdateJobRequest extends FormRequest
 			'working_place_country' => ['nullable', new Enum(WorkingPlaceCountry::class)],
 			'employment_contract_type' => ['nullable', new Enum(EmploymentContractType::class)],
 			'contractual_working_time' => 'nullable|string',
-			'contractual_working_time' => 'nullable|string',
 			'collective_agreement' => ['nullable', new Enum(CollectiveAgreement::class)],
 			'flexible_hours' => 'nullable|boolean',
 			'working_hours_modulation_system' => 'nullable|boolean',
