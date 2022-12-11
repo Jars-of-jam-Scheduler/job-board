@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreJobRequest;
 use App\Http\Requests\UpdateJobRequest;
 use App\Models\{Job, User};
+use App\Http\Resources\JobResource;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -15,6 +16,12 @@ class JobController extends Controller
 	public function __construct()
 	{
 		$this->middleware('auth:sanctum')->except('index');
+	}
+
+	public function index()
+	{
+		$jobs = Job::simplePaginate(25);
+		return JobResource::collection($jobs);	
 	}
 
     /**
