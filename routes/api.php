@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\User;
-use App\Http\Controllers\{JobController, ApplierController, FirmController};
+use App\Http\Controllers\{UserController, JobController, ApplierController, FirmController, EnumController};
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -38,6 +38,15 @@ Route::post('/sanctum/token', function(Request $request) {
 
 Route::apiResource('jobs', JobController::class);  // Routes are Sanctumed in the controller
 Route::put('/jobs/{job}/restore', [JobController::class, 'restore'])->whereNumber('job')->name('jobs_restore');
+
+Route::middleware('auth:sanctum')->group(function() {
+	Route::get('/user', [UserController::class, 'show'])->name('user_show');
+	Route::post('/user/logout', function(Request $request) {
+		auth()->user()->tokens()->delete();
+	})->name('user_logout');
+
+	Route::get('/enums', [EnumController::class, 'get'])->name('enums_get');
+});
 
 Route::middleware('auth:sanctum')->prefix('appliers')->name('appliers.')->group(function() {
 	Route::put('/', [ApplierController::class, 'update'])->name('update');
