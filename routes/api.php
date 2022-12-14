@@ -58,3 +58,8 @@ Route::middleware('auth:sanctum')->prefix('firms')->name('firms.')->group(functi
 	Route::put('/', [FirmController::class, 'update'])->name('update');
 	Route::post('/jobs_applications/{job_application}/accept_or_refuse_job_application', [FirmController::class, 'acceptOrRefuseJobApplication'])->whereNumber('job_application')->name('accept_or_refuse_job_application');
 });
+
+Route::middleware('auth:sanctum')->prefix('firm')->name('firm.')->group(function() {
+	Route::get('/jobs', [FirmController::class, 'getJobs'])->name('get_jobs');
+	Route::get('/soft_deleted_jobs', [FirmController::class, 'getSoftDeletedJobs'])->name('get_soft_deleted_jobs');
+});

@@ -47,6 +47,11 @@ class User extends Authenticatable
 		return $this->belongsToMany(Job::class)->using(JobUser::class)->withPivot('id');
 	}
 
+	public function firmJobs()
+	{
+		return $this->hasMany(Job::class, 'firm_id', 'id');
+	}
+
 	public function roles()
 	{
 		return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_title');

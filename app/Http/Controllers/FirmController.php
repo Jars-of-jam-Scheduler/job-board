@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\{Job, User, JobUser, AcceptedRefusedJobsApplicationsHistory};
 use App\Notifications\{NewJobApplication, AcceptedJobApplication, RefusedJobApplication};
 use App\Http\Requests\{AcceptOrRefuseJobApplicationUserRequest, UpdateFirmRequest};
+use App\Http\Resources\JobResource;
 
 class FirmController extends Controller
 {
@@ -31,5 +32,15 @@ class FirmController extends Controller
 		}
 
 		return $ret;
+	}
+
+	public function getJobs()
+	{
+		return JobResource::collection(auth()->user()->firmJobs()->simplePaginate(25));
+	}
+
+	public function getSoftDeletedJobs()
+	{
+		return JobResource::collection(auth()->user()->firmJobs()->onlyTrashed()->simplePaginate(25));
 	}
 }
