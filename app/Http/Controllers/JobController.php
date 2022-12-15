@@ -20,7 +20,7 @@ class JobController extends Controller
 
 	public function index()
 	{
-		$jobs = Job::simplePaginate(25);
+		$jobs = Job::latest()->simplePaginate(25);
 		return JobResource::collection($jobs);	
 	}
 

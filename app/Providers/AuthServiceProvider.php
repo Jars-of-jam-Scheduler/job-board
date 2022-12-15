@@ -53,6 +53,10 @@ class AuthServiceProvider extends ServiceProvider
 		Gate::define('accept-or-refuse-job-application', function(User $user, JobUser $job_application) {
 			return $user->hasRole('firm') && !$user->hasRole('job_applier') && $job_application->job->firm_id == $user->getKey();
 		});
+
+		Gate::define('only-firm', function(User $user) {
+			return $user->hasRole('firm') && !$user->hasRole('job_applier');
+		});
 	}
 
 	private function defineApplierGates() : void

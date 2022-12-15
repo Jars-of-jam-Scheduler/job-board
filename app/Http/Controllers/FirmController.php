@@ -7,6 +7,8 @@ use App\Notifications\{NewJobApplication, AcceptedJobApplication, RefusedJobAppl
 use App\Http\Requests\{AcceptOrRefuseJobApplicationUserRequest, UpdateFirmRequest};
 use App\Http\Resources\JobResource;
 
+use Illuminate\Support\Facades\Gate;
+
 class FirmController extends Controller
 {
 	public function update(UpdateFirmRequest $request)
@@ -36,11 +38,13 @@ class FirmController extends Controller
 
 	public function getJobs()
 	{
-		return JobResource::collection(auth()->user()->firmJobs()->simplePaginate(25));
+		Gate::authorize('only-firm');
+		return JobResource::collection(auth()->user()->firmJobs()->latest()->simplePaginate(25));
 	}
 
 	public function getSoftDeletedJobs()
 	{
-		return JobResource::collection(auth()->user()->firmJobs()->onlyTrashed()->simplePaginate(25));
+		Gate::authorize('only-firm');
+		return JobResource::collection(auth()->user()->firmJobs()->latest()->onlyTrashed()->simplePaginate(25));
 	}
 }
